@@ -48,13 +48,10 @@ export function ScrollCue() {
         y: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
         scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
       }}
-      className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 flex-col items-center gap-1 rounded-full border border-[var(--color-brand-blue)]/35 bg-black/65 px-5 py-3 text-white shadow-[0_0_35px_rgba(0,168,255,0.18)] backdrop-blur-md transition-colors duration-300 hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+      className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center justify-center rounded-full border border-[var(--color-brand-blue)]/35 bg-black/55 p-3 text-white shadow-[0_0_30px_rgba(0,168,255,0.16)] backdrop-blur-md transition-colors duration-300 hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
       aria-label="Scroll down"
       style={{ pointerEvents: canScrollMore ? "auto" : "none" }}
     >
-      <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-[var(--color-brand-blue)]">
-        Scroll Down
-      </span>
       <div className="flex flex-col items-center -space-y-3">
         <ChevronDown className="h-6 w-6" />
         <ChevronDown className="h-6 w-6 opacity-70" />
