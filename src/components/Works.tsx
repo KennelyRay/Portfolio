@@ -296,7 +296,7 @@ export function Works() {
                   </p>
                 </div>
 
-                <div className="grid xl:grid-cols-[minmax(0,1.35fr)_380px]">
+                <div className="grid xl:grid-cols-[minmax(0,1.5fr)_340px]">
                   <div className="relative aspect-[16/10] overflow-hidden xl:min-h-[460px] xl:aspect-auto">
                     {"thumbnail" in activeProject ? (
                       <Image
@@ -304,7 +304,7 @@ export function Works() {
                         alt={`${activeProject.title} homepage preview`}
                         fill
                         sizes="(max-width: 1280px) 100vw, 70vw"
-                        className="object-cover object-top"
+                        className="scale-[1.02] object-cover object-top"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-gray-900 text-8xl">
@@ -314,7 +314,7 @@ export function Works() {
                     <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#06111d] to-transparent" />
                   </div>
 
-                  <div className="flex flex-col justify-between gap-8 border-t border-white/10 p-6 sm:p-8 xl:border-l xl:border-t-0">
+                  <div className="flex flex-col justify-between gap-8 border-t border-white/10 p-5 sm:p-6 xl:border-l xl:border-t-0">
                     <div className="space-y-5">
                       <div className="flex flex-wrap items-center gap-3">
                         <span className="rounded-full border border-[var(--color-brand-blue)]/40 bg-[var(--color-brand-blue)]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-[var(--color-brand-blue)]">
