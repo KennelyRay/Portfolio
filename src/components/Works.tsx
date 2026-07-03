@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MonitorSmartphone,
+  ShoppingCart,
   WalletCards,
 } from "lucide-react";
 import { useState } from "react";
@@ -30,6 +31,14 @@ const projects = [
     link: "https://mcbughunter.vercel.app/",
     thumbnail: "/MastercraftBughunterThumbnail.png",
     icon: Bug,
+  },
+  {
+    title: "VertixHub",
+    desc: "A premium computer hardware e-commerce platform built for browsing products, custom PC building, and a modern shopping experience.",
+    role: "Solo Developer",
+    link: "https://vertixhub.vercel.app/home",
+    thumbnail: "/VertixHubThumbnail.png",
+    icon: ShoppingCart,
   },
   {
     title: "DENR Cashflow System",
