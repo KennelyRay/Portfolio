@@ -17,7 +17,7 @@ import { useState } from "react";
 
 const projects = [
   {
-    title: "Attendance Tracker",
+    title: "Human Resources Information System",
     desc: "An attendance management web app with reporting, employee management, terminal tools, and settings.",
     role: "Solo Developer",
     link: "https://j-attendance-tracker.vercel.app/",

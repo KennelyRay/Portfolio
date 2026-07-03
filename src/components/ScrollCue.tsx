@@ -52,10 +52,7 @@ export function ScrollCue() {
       aria-label="Scroll down"
       style={{ pointerEvents: canScrollMore ? "auto" : "none" }}
     >
-      <div className="flex flex-col items-center -space-y-3">
-        <ChevronDown className="h-6 w-6" />
-        <ChevronDown className="h-6 w-6 opacity-70" />
-      </div>
+      <ChevronDown className="h-6 w-6" />
     </motion.button>
   );
 }
