@@ -7,13 +7,15 @@ import {
   ArrowUpRight,
   Bug,
   CalendarDays,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   MonitorSmartphone,
   ShoppingCart,
   WalletCards,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const projects = [
   {
@@ -60,22 +62,102 @@ const projects = [
 
 export function Works() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [railStartIndex, setRailStartIndex] = useState(0);
 
   const activeProject = projects[activeIndex];
   const ActiveProjectIcon = activeProject.icon;
   const totalProjects = String(projects.length).padStart(2, "0");
+  const visibleCount = Math.min(4, projects.length);
+
+  const getVisibleIndices = (startIndex: number) =>
+    Array.from(
+      { length: visibleCount },
+      (_, offset) => (startIndex + offset) % projects.length,
+    );
+
+  const getNextRailStart = (
+    currentStart: number,
+    nextIndex: number,
+    direction: 1 | -1,
+  ) => {
+    if (projects.length <= visibleCount) {
+      return 0;
+    }
+
+    const visibleIndices = getVisibleIndices(currentStart);
+    if (visibleIndices.includes(nextIndex)) {
+      return currentStart;
+    }
+
+    return direction === 1
+      ? (currentStart + 1) % projects.length
+      : (currentStart - 1 + projects.length) % projects.length;
+  };
+
+  const visibleProjects = getVisibleIndices(railStartIndex).map((index) => ({
+    index,
+    project: projects[index],
+  }));
 
   const goToPrevious = () => {
     setActiveIndex((current) =>
-      current === 0 ? projects.length - 1 : current - 1,
+      {
+        const nextIndex = current === 0 ? projects.length - 1 : current - 1;
+        setRailStartIndex((currentStart) =>
+          getNextRailStart(currentStart, nextIndex, -1),
+        );
+        return nextIndex;
+      },
     );
   };
 
   const goToNext = () => {
     setActiveIndex((current) =>
-      current === projects.length - 1 ? 0 : current + 1,
+      {
+        const nextIndex = current === projects.length - 1 ? 0 : current + 1;
+        setRailStartIndex((currentStart) =>
+          getNextRailStart(currentStart, nextIndex, 1),
+        );
+        return nextIndex;
+      },
     );
   };
+
+  const scrollRail = (direction: 1 | -1) => {
+    if (projects.length <= visibleCount) {
+      return;
+    }
+
+    setRailStartIndex((current) => {
+      const nextStart =
+        direction === 1
+          ? (current + 1) % projects.length
+          : (current - 1 + projects.length) % projects.length;
+
+      setActiveIndex(nextStart);
+      return nextStart;
+    });
+  };
+
+  const selectProject = (index: number) => {
+    setActiveIndex(index);
+    setRailStartIndex((currentStart) => {
+      const visibleIndices = getVisibleIndices(currentStart);
+      return visibleIndices.includes(index) ? currentStart : index;
+    });
+  };
+
+  useEffect(() => {
+    if (projects.length <= visibleCount) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      scrollRail(1);
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [visibleCount]);
 
   return (
     <Section id="works" className="bg-transparent">
@@ -122,40 +204,75 @@ export function Works() {
 
         <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
           <div className="space-y-3">
-            {projects.map((proj, idx) => {
-              const isActive = idx === activeIndex;
-              const ProjectIcon = proj.icon;
+            {projects.length > visibleCount ? (
+              <button
+                type="button"
+                onClick={() => scrollRail(-1)}
+                className="flex h-11 w-full items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-gray-400 transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+                aria-label="Scroll project carousel up"
+              >
+                <ChevronUp className="h-5 w-5" />
+              </button>
+            ) : null}
 
-              return (
-                <motion.button
-                  key={proj.title}
-                  type="button"
-                  onClick={() => setActiveIndex(idx)}
-                  whileHover={{ x: 6 }}
-                  className={`w-full rounded-2xl border p-4 text-left transition-all duration-300 ${
-                    isActive
-                      ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 shadow-[0_0_30px_rgba(0,168,255,0.15)]"
-                      : "border-white/10 bg-white/[0.03] hover:border-white/20"
-                  }`}
-                  aria-pressed={isActive}
+            <div className="overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={railStartIndex}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -24 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="space-y-3"
                 >
-                  <div className="mb-4 flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-bold tracking-[0.3em] text-gray-500">
-                        {String(idx + 1).padStart(2, "0")}
-                      </p>
-                      <h3 className="mt-2 text-lg font-semibold text-white">
-                        {proj.title}
-                      </h3>
-                    </div>
-                    <ProjectIcon className="h-6 w-6 text-[var(--color-brand-blue)]" />
-                  </div>
-                  <p className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--color-brand-blue)]">
-                    {proj.role}
-                  </p>
-                </motion.button>
-              );
-            })}
+                  {visibleProjects.map(({ project: proj, index: idx }) => {
+                    const isActive = idx === activeIndex;
+                    const ProjectIcon = proj.icon;
+
+                    return (
+                      <motion.button
+                        key={`${proj.title}-${idx}`}
+                        type="button"
+                        onClick={() => selectProject(idx)}
+                        whileHover={{ x: 6 }}
+                        className={`w-full rounded-2xl border p-4 text-left transition-all duration-300 ${
+                          isActive
+                            ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 shadow-[0_0_30px_rgba(0,168,255,0.15)]"
+                            : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                        }`}
+                        aria-pressed={isActive}
+                      >
+                        <div className="mb-4 flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-xs font-bold tracking-[0.3em] text-gray-500">
+                              {String(idx + 1).padStart(2, "0")}
+                            </p>
+                            <h3 className="mt-2 text-lg font-semibold text-white">
+                              {proj.title}
+                            </h3>
+                          </div>
+                          <ProjectIcon className="h-6 w-6 text-[var(--color-brand-blue)]" />
+                        </div>
+                        <p className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--color-brand-blue)]">
+                          {proj.role}
+                        </p>
+                      </motion.button>
+                    );
+                  })}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {projects.length > visibleCount ? (
+              <button
+                type="button"
+                onClick={() => scrollRail(1)}
+                className="flex h-11 w-full items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-gray-400 transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+                aria-label="Scroll project carousel down"
+              >
+                <ChevronDown className="h-5 w-5" />
+              </button>
+            ) : null}
           </div>
 
           <div className="min-w-0">
@@ -222,8 +339,9 @@ export function Works() {
                           Experience
                         </p>
                         <p className="text-sm leading-relaxed text-gray-400">
-                          Use the project rail to swap previews instantly and
-                          explore each build through a focused showcase view.
+                          Browse four projects at a time through the vertical
+                          carousel, then let it auto-cycle or move through the
+                          rest manually for a focused preview experience.
                         </p>
                       </div>
                     </div>
