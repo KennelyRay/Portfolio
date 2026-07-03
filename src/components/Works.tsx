@@ -21,7 +21,7 @@ const projects = [
     desc: "An attendance management web app with reporting, employee management, terminal tools, and settings.",
     role: "Solo Developer",
     link: "https://j-attendance-tracker.vercel.app/",
-    thumbnail: "/AttendanTrackerThumbnail.png",
+    thumbnail: "/AttendanceTrackerThumbnail.png",
     icon: MonitorSmartphone,
   },
   {
