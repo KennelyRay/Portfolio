@@ -3,7 +3,7 @@
 import { Section } from "./Section";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { BriefcaseBusiness, GraduationCap, MapPin, Sparkles } from "lucide-react";
+import { BriefcaseBusiness, GraduationCap } from "lucide-react";
 
 export function About() {
   return (
@@ -19,16 +19,15 @@ export function About() {
             </h2>
             <p className="max-w-3xl text-xl font-medium text-white sm:text-2xl">
               Hi, I&apos;m <span className="text-[var(--color-brand-blue)]">Kennely Ray</span>,
-              a developer who enjoys turning ideas into clean, usable, and
-              meaningful web experiences.
+              a web developer who enjoys building useful products and turning ideas
+              into real, working experiences on the web.
             </p>
           </div>
 
           <p className="max-w-3xl text-lg leading-relaxed text-gray-400">
-            I build websites and systems with a strong focus on clarity,
-            usability, and thoughtful implementation. My goal is to create
-            digital products that not only work well, but also feel polished,
-            intuitive, and easy for people to use.
+            I enjoy working on projects that solve real problems, whether that
+            means building internal systems, improving user flows, or creating
+            interfaces that are straightforward and reliable to use.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -43,7 +42,7 @@ export function About() {
                 Web Development
               </p>
               <p className="mt-2 text-sm leading-relaxed text-gray-400">
-                Building responsive interfaces and practical digital systems.
+                Interfaces, systems, and experiences built with purpose.
               </p>
             </div>
 
@@ -60,17 +59,6 @@ export function About() {
               <p className="mt-2 text-sm leading-relaxed text-gray-400">
                 Saint Louis University
               </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3 pt-2">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-gray-300">
-              <MapPin className="h-4 w-4 text-[var(--color-brand-blue)]" />
-              Purposeful Digital Products
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-gray-300">
-              <Sparkles className="h-4 w-4 text-[var(--color-brand-blue)]" />
-              Clean and Intuitive Experiences
             </div>
           </div>
         </div>
@@ -101,7 +89,7 @@ export function About() {
                 Web Developer
               </p>
               <p className="mt-2 text-sm leading-relaxed text-gray-300">
-                Focused on thoughtful interfaces, practical systems, and polished user experiences.
+                Building practical web experiences with clean execution and reliable usability.
               </p>
             </div>
           </motion.div>
