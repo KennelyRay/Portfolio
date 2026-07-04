@@ -13,6 +13,7 @@ import {
   ChevronUp,
   MonitorSmartphone,
   ShoppingCart,
+  Store,
   WalletCards,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -21,7 +22,7 @@ const projects = [
   {
     title: "Human Resources Information System",
     desc: "An attendance management web app with reporting, employee management, terminal tools, and settings.",
-    role: "Solo Developer",
+    role: "Developer",
     link: "https://j-attendance-tracker.vercel.app/",
     thumbnail: "/AttendanceTrackerThumbnail.png",
     icon: MonitorSmartphone,
@@ -29,7 +30,7 @@ const projects = [
   {
     title: "MasterCraft Bug Hunter",
     desc: "A bug reporting platform built for clean issue tracking, organized triage, and reward-based bug submissions.",
-    role: "Solo Developer",
+    role: "Developer",
     link: "https://mcbughunter.vercel.app/",
     thumbnail: "/MastercraftBughunterThumbnail.png",
     icon: Bug,
@@ -37,7 +38,7 @@ const projects = [
   {
     title: "VertixHub",
     desc: "A premium computer hardware e-commerce platform built for browsing products, custom PC building, and a modern shopping experience.",
-    role: "Solo Developer",
+    role: "Developer",
     link: "https://vertixhub.vercel.app/home",
     thumbnail: "/VertixHubThumbnail.png",
     icon: ShoppingCart,
@@ -45,7 +46,7 @@ const projects = [
   {
     title: "DENR Cashflow System",
     desc: "A secure cashflow tracking and reporting system designed for streamlined financial monitoring.",
-    role: "Solo Developer",
+    role: "Developer",
     link: "https://denr-cashflow-system.vercel.app/login",
     thumbnail: "/CashflowSystemThumbnail.png",
     icon: WalletCards,
@@ -57,6 +58,14 @@ const projects = [
     link: "https://denr-car-reservation.vercel.app/",
     thumbnail: "/ReservationSystemThumbnail.png",
     icon: CalendarDays,
+  },
+  {
+    title: "Ken-dal Store POS",
+    desc: "A point of sale system built for store management, inventory control, sales tracking, and secure access.",
+    role: "Developer",
+    link: "https://kendal-store.vercel.app/#/login",
+    thumbnail: "/KendalStoreThumbnail.png",
+    icon: Store,
   },
 ];
 
