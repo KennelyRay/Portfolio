@@ -243,17 +243,43 @@ export function About() {
               )}
             </AnimatePresence>
 
-            <div className="absolute bottom-5 left-5 right-5 rounded-[1.5rem] border border-white/10 bg-black/45 p-4 backdrop-blur-md">
-              <p className="text-xs font-bold uppercase tracking-[0.28em] text-[var(--color-brand-blue)]">
-                Kennely Ray
-              </p>
-              <p className="mt-2 text-lg font-semibold text-white">
-                Web Developer
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-gray-300">
-                Building practical web experiences with clean execution and reliable usability.
-              </p>
-            </div>
+            <motion.div
+              animate={{
+                borderColor: isUnlocked
+                  ? "rgba(255,255,255,0.10)"
+                  : "rgba(255,255,255,0.06)",
+                backgroundColor: isUnlocked
+                  ? "rgba(0,0,0,0.45)"
+                  : "rgba(0,0,0,0.72)",
+              }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="absolute bottom-5 left-5 right-5 rounded-[1.5rem] border p-4 backdrop-blur-md"
+            >
+              {isUnlocked ? (
+                <>
+                  <p className="text-xs font-bold uppercase tracking-[0.28em] text-[var(--color-brand-blue)]">
+                    Kennely Ray
+                  </p>
+                  <p className="mt-2 text-lg font-semibold text-white">
+                    Web Developer
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-300">
+                    Building practical web experiences with clean execution and reliable usability.
+                  </p>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-xs font-bold uppercase tracking-[0.28em] text-[var(--color-brand-blue)]/75">
+                    Identity Redacted
+                  </p>
+                  <div className="h-6 w-40 rounded-full bg-white/10" />
+                  <div className="space-y-2">
+                    <div className="h-3 w-full rounded-full bg-white/8" />
+                    <div className="h-3 w-[86%] rounded-full bg-white/8" />
+                  </div>
+                </div>
+              )}
+            </motion.div>
           </motion.div>
         </div>
       </div>
