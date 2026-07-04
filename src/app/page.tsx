@@ -20,9 +20,9 @@ export default function Home() {
         <Hero />
       </Section>
 
-      <About />
-      <TechStack />
       <Works />
+      <TechStack />
+      <About />
       <Contact />
       
       <Footer />
