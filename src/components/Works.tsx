@@ -163,7 +163,7 @@ export function Works() {
 
     const intervalId = window.setInterval(() => {
       scrollRail(1);
-    }, 5000);
+    }, 15000);
 
     return () => window.clearInterval(intervalId);
   }, [visibleCount]);
@@ -305,15 +305,15 @@ export function Works() {
                   </p>
                 </div>
 
-                <div className="grid xl:grid-cols-[minmax(0,1.5fr)_340px]">
-                  <div className="relative aspect-[16/10] overflow-hidden xl:min-h-[460px] xl:aspect-auto">
+                <div className="grid xl:min-h-[520px] xl:grid-cols-[minmax(0,1.5fr)_340px]">
+                  <div className="relative h-[320px] overflow-hidden sm:h-[400px] xl:h-full">
                     {"thumbnail" in activeProject ? (
                       <Image
                         src={activeProject.thumbnail}
                         alt={`${activeProject.title} homepage preview`}
                         fill
                         sizes="(max-width: 1280px) 100vw, 70vw"
-                        className="scale-[1.02] object-cover object-top"
+                        className="scale-[1.02] object-cover object-center"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-gray-900 text-8xl">
