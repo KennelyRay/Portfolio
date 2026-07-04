@@ -67,9 +67,9 @@ export function MobileNavigator() {
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-      className="fixed inset-x-0 bottom-4 z-40 px-3 xl:hidden"
+      className="fixed bottom-4 left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-[520px] -translate-x-1/2 xl:hidden"
     >
-      <div className="mx-auto max-w-xl rounded-[1.8rem] border border-white/10 bg-[#05070a]/88 px-2 py-2 shadow-[0_0_40px_rgba(0,168,255,0.08)] backdrop-blur-xl">
+      <div className="w-full rounded-[1.8rem] border border-white/10 bg-[#05070a]/88 px-2 py-2 shadow-[0_0_40px_rgba(0,168,255,0.08)] backdrop-blur-xl">
         <div className="overflow-x-auto overscroll-x-contain">
           <div className="flex snap-x snap-mandatory gap-2">
             {navItems.map((item, index) => {
