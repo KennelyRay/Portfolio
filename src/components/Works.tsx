@@ -350,10 +350,10 @@ export function Works() {
                         href={activeProject.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-brand-blue)] px-6 py-3 text-sm font-bold uppercase tracking-[0.2em] text-black transition-transform duration-300 hover:scale-[1.02]"
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-brand-blue)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition-transform duration-300 hover:scale-[1.02]"
                       >
                         Open Project
-                        <ArrowUpRight className="h-4 w-4" />
+                        <ArrowUpRight className="h-3.5 w-3.5" />
                       </a>
 
                       <div className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">
