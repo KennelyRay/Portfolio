@@ -48,7 +48,7 @@ export function ScrollCue() {
         y: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
         scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
       }}
-      className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center justify-center rounded-full border border-[var(--color-brand-blue)]/35 bg-black/55 p-3 text-white shadow-[0_0_30px_rgba(0,168,255,0.16)] backdrop-blur-md transition-colors duration-300 hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+      className="fixed bottom-6 left-1/2 z-40 hidden -translate-x-1/2 items-center justify-center rounded-full border border-[var(--color-brand-blue)]/35 bg-black/55 p-3 text-white shadow-[0_0_30px_rgba(0,168,255,0.16)] backdrop-blur-md transition-colors duration-300 hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] xl:flex"
       aria-label="Scroll down"
       style={{ pointerEvents: canScrollMore ? "auto" : "none" }}
     >
