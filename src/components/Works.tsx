@@ -72,6 +72,7 @@ const projects = [
 export function Works() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [railStartIndex, setRailStartIndex] = useState(0);
+  const [autoAdvanceCycle, setAutoAdvanceCycle] = useState(0);
 
   const activeProject = projects[activeIndex];
   const ActiveProjectIcon = activeProject.icon;
@@ -108,7 +109,12 @@ export function Works() {
     project: projects[index],
   }));
 
+  const resetAutoAdvanceTimer = () => {
+    setAutoAdvanceCycle((current) => current + 1);
+  };
+
   const goToPrevious = () => {
+    resetAutoAdvanceTimer();
     setActiveIndex((current) =>
       {
         const nextIndex = current === 0 ? projects.length - 1 : current - 1;
@@ -121,6 +127,7 @@ export function Works() {
   };
 
   const goToNext = () => {
+    resetAutoAdvanceTimer();
     setActiveIndex((current) =>
       {
         const nextIndex = current === projects.length - 1 ? 0 : current + 1;
@@ -132,9 +139,13 @@ export function Works() {
     );
   };
 
-  const scrollRail = (direction: 1 | -1) => {
+  const scrollRail = (direction: 1 | -1, shouldResetTimer = false) => {
     if (projects.length <= visibleCount) {
       return;
+    }
+
+    if (shouldResetTimer) {
+      resetAutoAdvanceTimer();
     }
 
     setRailStartIndex((current) => {
@@ -149,6 +160,7 @@ export function Works() {
   };
 
   const selectProject = (index: number) => {
+    resetAutoAdvanceTimer();
     setActiveIndex(index);
     setRailStartIndex((currentStart) => {
       const visibleIndices = getVisibleIndices(currentStart);
@@ -161,12 +173,13 @@ export function Works() {
       return;
     }
 
-    const intervalId = window.setInterval(() => {
+    const timeoutId = window.setTimeout(() => {
       scrollRail(1);
+      setAutoAdvanceCycle((current) => current + 1);
     }, 15000);
 
-    return () => window.clearInterval(intervalId);
-  }, [visibleCount]);
+    return () => window.clearTimeout(timeoutId);
+  }, [autoAdvanceCycle, visibleCount]);
 
   return (
     <Section id="works" className="bg-transparent">
@@ -216,7 +229,7 @@ export function Works() {
             {projects.length > visibleCount ? (
               <button
                 type="button"
-                onClick={() => scrollRail(-1)}
+                onClick={() => scrollRail(-1, true)}
                 className="flex h-11 w-full items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-gray-400 transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
                 aria-label="Scroll project carousel up"
               >
@@ -275,7 +288,7 @@ export function Works() {
             {projects.length > visibleCount ? (
               <button
                 type="button"
-                onClick={() => scrollRail(1)}
+                onClick={() => scrollRail(1, true)}
                 className="flex h-11 w-full items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-gray-400 transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
                 aria-label="Scroll project carousel down"
               >
