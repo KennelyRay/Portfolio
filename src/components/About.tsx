@@ -23,6 +23,18 @@ export function About() {
     return () => window.clearTimeout(timeoutId);
   }, [unlockStage]);
 
+  useEffect(() => {
+    if (unlockStage !== "unlocked") {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setUnlockStage("locked");
+    }, 20000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [unlockStage]);
+
   const isUnlocked = unlockStage === "unlocked";
 
   const handleUnlock = () => {
@@ -109,7 +121,7 @@ export function About() {
               className={`object-cover object-center transition-all duration-700 ${
                 isUnlocked
                   ? "scale-100 blur-0 grayscale-0"
-                  : "scale-[1.08] blur-md grayscale"
+                  : "scale-[1.08] blur-lg grayscale brightness-[0.38]"
               }`}
             />
 
@@ -117,7 +129,7 @@ export function About() {
               animate={{
                 background: isUnlocked
                   ? "linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0), rgba(0,168,255,0.10))"
-                  : "linear-gradient(to top, rgba(0,0,0,0.86), rgba(0,0,0,0.45), rgba(0,168,255,0.18))",
+                  : "linear-gradient(to top, rgba(0,0,0,0.94), rgba(0,0,0,0.72), rgba(0,168,255,0.12))",
               }}
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="absolute inset-0"
@@ -130,7 +142,7 @@ export function About() {
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0, scale: 1.04 }}
                   transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute inset-0 flex flex-col items-center justify-center bg-black/35 px-6 text-center backdrop-blur-[2px]"
+                  className="absolute inset-0 flex flex-col items-center justify-center bg-black/55 px-6 text-center backdrop-blur-[4px]"
                 >
                   <motion.div
                     animate={{
