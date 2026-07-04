@@ -343,16 +343,6 @@ export function Works() {
                         </p>
                       </div>
 
-                      <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">
-                          Experience
-                        </p>
-                        <p className="text-sm leading-relaxed text-gray-400">
-                          Browse four projects at a time through the vertical
-                          carousel, then let it auto-cycle or move through the
-                          rest manually for a focused preview experience.
-                        </p>
-                      </div>
                     </div>
 
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
