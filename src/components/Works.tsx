@@ -211,8 +211,8 @@ export function Works() {
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-          <div className="space-y-3">
+        <div className="grid items-stretch gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+          <div className="flex flex-col gap-3 lg:min-h-[620px]">
             {projects.length > visibleCount ? (
               <button
                 type="button"
@@ -224,7 +224,7 @@ export function Works() {
               </button>
             ) : null}
 
-            <div className="overflow-hidden">
+            <div className="flex-1 overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={railStartIndex}
@@ -232,7 +232,7 @@ export function Works() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -24 }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
-                  className="space-y-3"
+                  className="flex h-full flex-col justify-center space-y-3"
                 >
                   {visibleProjects.map(({ project: proj, index: idx }) => {
                     const isActive = idx === activeIndex;
@@ -292,7 +292,7 @@ export function Works() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -24 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#06111d]/90"
+                className="h-full overflow-hidden rounded-[2rem] border border-white/10 bg-[#06111d]/90"
               >
                 <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
                   <div className="flex items-center gap-2">
