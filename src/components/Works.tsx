@@ -305,15 +305,15 @@ export function Works() {
                   </p>
                 </div>
 
-                <div className="grid xl:min-h-[520px] xl:grid-cols-[minmax(0,1.5fr)_340px]">
-                  <div className="relative h-[320px] overflow-hidden sm:h-[400px] xl:h-full">
+                <div className="grid xl:grid-cols-[minmax(0,1.5fr)_340px]">
+                  <div className="relative h-[320px] overflow-hidden bg-[#05101b] sm:h-[400px] xl:h-[520px]">
                     {"thumbnail" in activeProject ? (
                       <Image
                         src={activeProject.thumbnail}
                         alt={`${activeProject.title} homepage preview`}
                         fill
                         sizes="(max-width: 1280px) 100vw, 70vw"
-                        className="scale-[1.02] object-cover object-center"
+                        className="h-full w-full object-cover object-center"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-gray-900 text-8xl">
@@ -335,10 +335,10 @@ export function Works() {
                       </div>
 
                       <div className="space-y-3">
-                        <h3 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                        <h3 className="text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl xl:text-[2rem]">
                           {activeProject.title}
                         </h3>
-                        <p className="text-base leading-relaxed text-gray-400">
+                        <p className="text-sm leading-relaxed text-gray-400 sm:text-[15px]">
                           {activeProject.desc}
                         </p>
                       </div>
