@@ -48,22 +48,6 @@ export function Hero() {
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.58, duration: 0.8 }}
-          className="grid w-full gap-3 sm:hidden"
-        >
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] px-4 py-4">
-            <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--color-brand-blue)]">
-              Mobile View
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-gray-400">
-              Built to stay readable, direct, and fast to explore on smaller screens.
-            </p>
-          </div>
-        </motion.div>
-
-        <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.7, duration: 0.5 }}

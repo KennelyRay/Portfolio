@@ -16,7 +16,7 @@ import {
   Store,
   WalletCards,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const projects = [
   {
@@ -73,6 +73,7 @@ export function Works() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [railStartIndex, setRailStartIndex] = useState(0);
   const [autoAdvanceCycle, setAutoAdvanceCycle] = useState(0);
+  const mobileProjectButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const activeProject = projects[activeIndex];
   const ActiveProjectIcon = activeProject.icon;
@@ -180,6 +181,20 @@ export function Works() {
 
     return () => window.clearTimeout(timeoutId);
   }, [autoAdvanceCycle, visibleCount]);
+
+  useEffect(() => {
+    const activeButton = mobileProjectButtonRefs.current[activeIndex];
+
+    if (!activeButton) {
+      return;
+    }
+
+    activeButton.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  }, [activeIndex]);
 
   return (
     <Section id="works" className="bg-transparent">
@@ -335,24 +350,13 @@ export function Works() {
                 <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">
                   Browse Projects
                 </p>
-                <div className="flex items-center gap-2">
-                  {projects.map((project, idx) => (
-                    <button
-                      key={`${project.title}-dot`}
-                      type="button"
-                      onClick={() => selectProject(idx)}
-                      className={`h-2.5 rounded-full transition-all duration-300 ${
-                        idx === activeIndex
-                          ? "w-8 bg-[var(--color-brand-blue)]"
-                          : "w-2.5 bg-white/15 hover:bg-white/30"
-                      }`}
-                      aria-label={`Go to project ${idx + 1}`}
-                    />
-                  ))}
-                </div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gray-500">
+                  Swipe or tap
+                </p>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="-mx-4 overflow-x-auto px-4 pb-2 overscroll-x-contain sm:-mx-6 sm:px-6">
+                <div className="flex snap-x snap-mandatory gap-3">
                 {projects.map((proj, idx) => {
                   const isActive = idx === activeIndex;
                   const ProjectIcon = proj.icon;
@@ -361,9 +365,12 @@ export function Works() {
                     <motion.button
                       key={`${proj.title}-mobile-card`}
                       type="button"
+                      ref={(element) => {
+                        mobileProjectButtonRefs.current[idx] = element;
+                      }}
                       onClick={() => selectProject(idx)}
                       whileTap={{ scale: 0.98 }}
-                      className={`rounded-[1.4rem] border p-4 text-left transition-all duration-300 ${
+                      className={`min-h-[148px] w-[220px] shrink-0 snap-center rounded-[1.4rem] border p-4 text-left transition-all duration-300 sm:w-[250px] ${
                         isActive
                           ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 shadow-[0_0_24px_rgba(0,168,255,0.12)]"
                           : "border-white/10 bg-white/[0.03] hover:border-white/20"
@@ -379,12 +386,16 @@ export function Works() {
                       <h3 className="text-base font-semibold leading-snug text-white">
                         {proj.title}
                       </h3>
+                      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-gray-400">
+                        {proj.desc}
+                      </p>
                       <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--color-brand-blue)]">
                         {proj.role}
                       </p>
                     </motion.button>
                   );
                 })}
+                </div>
               </div>
             </div>
           </div>

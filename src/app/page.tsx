@@ -8,12 +8,14 @@ import { Section } from "@/components/Section";
 import { BackgroundAnimation } from "@/components/BackgroundAnimation";
 import { Footer } from "@/components/Footer";
 import { ScrollCue } from "@/components/ScrollCue";
+import { MobileNavigator } from "@/components/MobileNavigator";
 
 export default function Home() {
   return (
-    <main className="relative bg-transparent min-h-screen">
+    <main className="relative min-h-screen bg-transparent pb-24 xl:pb-0">
       <BackgroundAnimation />
       <Navbar />
+      <MobileNavigator />
       <ScrollCue />
       
       <Section id="home" className="min-h-screen">

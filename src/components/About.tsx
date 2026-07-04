@@ -142,7 +142,7 @@ export function About() {
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0, scale: 1.04 }}
                   transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute inset-0 flex flex-col items-center justify-center bg-black/55 px-6 text-center backdrop-blur-[4px]"
+                  className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/55 px-6 text-center backdrop-blur-[4px]"
                 >
                   <motion.div
                     animate={{
@@ -235,7 +235,7 @@ export function About() {
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.55, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="pointer-events-none absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-[var(--color-brand-blue)]/30 bg-black/45 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.24em] text-white backdrop-blur-md"
+                  className="pointer-events-none absolute left-5 top-5 z-20 inline-flex items-center gap-2 rounded-full border border-[var(--color-brand-blue)]/30 bg-black/45 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.24em] text-white backdrop-blur-md"
                 >
                   <LockOpen className="h-3.5 w-3.5 text-[var(--color-brand-blue)]" />
                   Face Reveal Successful
@@ -253,7 +253,7 @@ export function About() {
                   : "rgba(0,0,0,0.72)",
               }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="absolute bottom-5 left-5 right-5 rounded-[1.5rem] border p-4 backdrop-blur-md"
+              className="pointer-events-none absolute bottom-5 left-5 right-5 z-10 rounded-[1.5rem] border p-4 backdrop-blur-md"
             >
               {isUnlocked ? (
                 <>
