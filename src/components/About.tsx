@@ -7,9 +7,11 @@ import Image from "next/image";
 import { BriefcaseBusiness, GraduationCap, Lock, LockOpen } from "lucide-react";
 
 export function About() {
+  const profileImages = ["/Me2.jpg", "/Me.jpg"];
   const [unlockStage, setUnlockStage] = useState<
     "locked" | "denied" | "hacking" | "unlocked"
   >("locked");
+  const [activeProfileImage, setActiveProfileImage] = useState(0);
 
   useEffect(() => {
     if (unlockStage !== "hacking") {
@@ -34,6 +36,16 @@ export function About() {
 
     return () => window.clearTimeout(timeoutId);
   }, [unlockStage]);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setActiveProfileImage((current) =>
+        current === profileImages.length - 1 ? 0 : current + 1,
+      );
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [profileImages.length]);
 
   const isUnlocked = unlockStage === "unlocked";
 
@@ -114,16 +126,27 @@ export function About() {
             transition={{ type: "spring", stiffness: 220, damping: 20 }}
             className="relative h-full overflow-hidden rounded-[2rem] border border-[var(--color-brand-blue)]/35 bg-black/30 shadow-[0_0_35px_rgba(0,168,255,0.18)]"
           >
-            <Image
-              src="/Me.jpg"
-              alt="Portrait of Kennely Ray"
-              fill
-              className={`object-cover object-center transition-all duration-700 ${
-                isUnlocked
-                  ? "scale-100 blur-0 grayscale-0"
-                  : "scale-[1.08] blur-lg grayscale brightness-[0.38]"
-              }`}
-            />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={profileImages[activeProfileImage]}
+                initial={{ opacity: 0.2, scale: 1.03 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.985 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src={profileImages[activeProfileImage]}
+                  alt="Portrait of Kennely Ray"
+                  fill
+                  className={`object-cover object-center transition-all duration-700 ${
+                    isUnlocked
+                      ? "scale-100 blur-0 grayscale-0"
+                      : "scale-[1.08] blur-lg grayscale brightness-[0.38]"
+                  }`}
+                />
+              </motion.div>
+            </AnimatePresence>
 
             <motion.div
               animate={{
