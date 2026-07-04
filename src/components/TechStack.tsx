@@ -130,7 +130,7 @@ export function TechStack() {
 
   return (
     <Section id="stack" className="bg-transparent">
-      <div className="w-full space-y-16">
+      <div className="w-full space-y-10 sm:space-y-16">
         <div className="space-y-4 text-center">
           <h2 className="text-4xl font-bold tracking-tight uppercase sm:text-6xl">
             TECH <span className="text-[var(--color-brand-blue)]">STACK</span>
@@ -161,19 +161,19 @@ export function TechStack() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -16, scale: 0.98 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="mx-auto max-w-4xl px-8 py-12 text-center sm:px-12 sm:py-14"
+                className="mx-auto max-w-4xl px-4 py-8 text-center sm:px-12 sm:py-14"
                 >
-                  <div className="mx-auto mb-8 flex h-28 w-28 items-center justify-center text-[var(--color-brand-blue)] sm:h-32 sm:w-32">
+                  <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center text-[var(--color-brand-blue)] sm:mb-8 sm:h-32 sm:w-32">
                     <ActiveTechIcon className="h-16 w-16 sm:h-20 sm:w-20" />
                   </div>
 
                   <p className="mb-4 text-sm font-bold uppercase tracking-[0.35em] text-[var(--color-brand-blue)]">
                     {activeTech.category}
                   </p>
-                  <h3 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+                  <h3 className="text-3xl font-bold tracking-tight text-white sm:text-6xl">
                     {activeTech.name}
                   </h3>
-                  <p className="mx-auto mt-6 max-w-3xl text-base leading-relaxed text-gray-400 sm:text-lg">
+                  <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-gray-400 sm:mt-6 sm:text-lg">
                     {activeTech.note}
                   </p>
                 </motion.div>
@@ -190,7 +190,7 @@ export function TechStack() {
             </button>
           </div>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <div className="mt-8 flex gap-3 overflow-x-auto pb-2 sm:mt-10 sm:flex-wrap sm:justify-center sm:gap-4 sm:overflow-visible sm:pb-0">
             {techStack.map((tech, idx) => {
               const isActive = idx === activeIndex;
               const TechIcon = tech.Icon;
@@ -202,7 +202,7 @@ export function TechStack() {
                   onClick={() => setActiveIndex(idx)}
                   whileHover={{ y: -3 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`inline-flex min-h-14 items-center gap-3 rounded-full border px-6 py-3 text-base font-medium transition-all duration-300 ${
+                  className={`inline-flex min-h-12 shrink-0 items-center gap-3 rounded-full border px-5 py-3 text-sm font-medium transition-all duration-300 sm:min-h-14 sm:px-6 sm:text-base ${
                     isActive
                       ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-white"
                       : "border-white/10 bg-white/[0.03] text-gray-400 hover:border-white/20 hover:text-white"

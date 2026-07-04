@@ -183,12 +183,12 @@ export function Works() {
 
   return (
     <Section id="works" className="bg-transparent">
-      <div className="space-y-16">
-        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-center uppercase">
+      <div className="space-y-10 sm:space-y-12 xl:space-y-16">
+        <h2 className="text-center text-4xl font-bold tracking-tight uppercase sm:text-6xl">
           MY <span className="text-[var(--color-brand-blue)]">WORKS</span>
         </h2>
 
-        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mb-2 flex flex-col gap-4 xl:mb-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="space-y-2">
             <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--color-brand-blue)]">
               Project Browser
@@ -199,7 +199,7 @@ export function Works() {
             </p>
           </div>
 
-          <div className="flex items-center justify-between gap-4 sm:justify-end">
+          <div className="hidden items-center justify-between gap-4 sm:justify-end xl:flex">
             <div className="text-sm font-bold tracking-[0.3em] text-gray-500">
               {String(activeIndex + 1).padStart(2, "0")} / {totalProjects}
             </div>
@@ -224,7 +224,173 @@ export function Works() {
           </div>
         </div>
 
-        <div className="grid items-stretch gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+        <div className="xl:hidden">
+          <div className="space-y-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">
+                  Active Project
+                </p>
+                <p className="mt-2 text-sm font-bold tracking-[0.26em] text-[var(--color-brand-blue)]">
+                  {String(activeIndex + 1).padStart(2, "0")} / {totalProjects}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={goToPrevious}
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+                  aria-label="Previous project"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={goToNext}
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+                  aria-label="Next project"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${activeProject.title}-mobile`}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -24 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#06111d]/90"
+              >
+                <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-full bg-red-400/80" />
+                    <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
+                    <span className="h-3 w-3 rounded-full bg-green-400/80" />
+                  </div>
+                  <p className="max-w-[58%] truncate text-[10px] font-medium uppercase tracking-[0.18em] text-gray-500 sm:text-xs">
+                    {activeProject.link.replace(/^https?:\/\//, "")}
+                  </p>
+                </div>
+
+                <div className="relative h-[240px] overflow-hidden bg-[#05101b] sm:h-[320px]">
+                  {"thumbnail" in activeProject ? (
+                    <Image
+                      src={activeProject.thumbnail}
+                      alt={`${activeProject.title} homepage preview`}
+                      fill
+                      sizes="100vw"
+                      className="h-full w-full object-cover object-center"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gray-900">
+                      <ActiveProjectIcon className="h-20 w-20 text-[var(--color-brand-blue)]" />
+                    </div>
+                  )}
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#06111d] to-transparent" />
+                </div>
+
+                <div className="space-y-5 p-4 sm:p-6">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="rounded-full border border-[var(--color-brand-blue)]/40 bg-[var(--color-brand-blue)]/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--color-brand-blue)] sm:px-4 sm:text-xs">
+                      {activeProject.role}
+                    </span>
+                    <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-gray-500 sm:text-xs">
+                      Mobile Spotlight
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl">
+                      {activeProject.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed text-gray-400 sm:text-[15px]">
+                      {activeProject.desc}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <a
+                      href={activeProject.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-brand-blue)] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-black transition-transform duration-300 hover:scale-[1.02]"
+                    >
+                      Open Project
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </a>
+                    <div className="text-xs font-bold uppercase tracking-[0.28em] text-gray-500">
+                      Featured Build
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">
+                  Browse Projects
+                </p>
+                <div className="flex items-center gap-2">
+                  {projects.map((project, idx) => (
+                    <button
+                      key={`${project.title}-dot`}
+                      type="button"
+                      onClick={() => selectProject(idx)}
+                      className={`h-2.5 rounded-full transition-all duration-300 ${
+                        idx === activeIndex
+                          ? "w-8 bg-[var(--color-brand-blue)]"
+                          : "w-2.5 bg-white/15 hover:bg-white/30"
+                      }`}
+                      aria-label={`Go to project ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {projects.map((proj, idx) => {
+                  const isActive = idx === activeIndex;
+                  const ProjectIcon = proj.icon;
+
+                  return (
+                    <motion.button
+                      key={`${proj.title}-mobile-card`}
+                      type="button"
+                      onClick={() => selectProject(idx)}
+                      whileTap={{ scale: 0.98 }}
+                      className={`rounded-[1.4rem] border p-4 text-left transition-all duration-300 ${
+                        isActive
+                          ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 shadow-[0_0_24px_rgba(0,168,255,0.12)]"
+                          : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                      }`}
+                      aria-pressed={isActive}
+                    >
+                      <div className="mb-3 flex items-start justify-between gap-4">
+                        <p className="text-xs font-bold tracking-[0.28em] text-gray-500">
+                          {String(idx + 1).padStart(2, "0")}
+                        </p>
+                        <ProjectIcon className="h-5 w-5 text-[var(--color-brand-blue)]" />
+                      </div>
+                      <h3 className="text-base font-semibold leading-snug text-white">
+                        {proj.title}
+                      </h3>
+                      <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--color-brand-blue)]">
+                        {proj.role}
+                      </p>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="hidden items-stretch gap-6 xl:grid xl:grid-cols-[300px_minmax(0,1fr)]">
           <div className="flex flex-col gap-3 lg:min-h-[620px]">
             {projects.length > visibleCount ? (
               <button

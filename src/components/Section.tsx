@@ -19,7 +19,7 @@ export function Section({ children, className, id }: SectionProps) {
       viewport={{ once: true, margin: "-8% 0px -16% 0px" }}
       transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "scroll-mt-24 flex min-h-screen items-center justify-center px-4 py-20 sm:px-6 lg:px-10 xl:px-12",
+        "scroll-mt-24 flex min-h-[auto] items-center justify-center px-4 py-16 sm:min-h-screen sm:py-20 sm:px-6 lg:px-10 xl:px-12",
         className,
       )}
     >
