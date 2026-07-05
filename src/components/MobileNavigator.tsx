@@ -17,8 +17,8 @@ export function MobileNavigator() {
   const itemRefs = useRef<Array<HTMLAnchorElement | null>>([]);
 
   useEffect(() => {
-    const updateActiveSection = () => {
-      const sectionOffsets = navItems
+    const getSectionMetrics = () =>
+      navItems
         .map((item) => {
           const element = document.getElementById(item.id);
 
@@ -26,15 +26,28 @@ export function MobileNavigator() {
             return null;
           }
 
+          const top = element.offsetTop;
+          const height = element.offsetHeight;
+
           return {
             id: item.id,
-            top: element.getBoundingClientRect().top,
+            top,
+            bottom: top + height,
           };
         })
-        .filter((entry): entry is { id: string; top: number } => entry !== null);
+        .filter(
+          (entry): entry is { id: string; top: number; bottom: number } =>
+            entry !== null,
+        );
+
+    const updateActiveSection = () => {
+      const sections = getSectionMetrics();
+      const probeLine = window.scrollY + 140;
 
       const current =
-        sectionOffsets.findLast((entry) => entry.top <= 140) ?? sectionOffsets[0];
+        sections.find(
+          (section) => probeLine >= section.top && probeLine < section.bottom,
+        ) ?? sections.at(-1);
 
       if (current) {
         setActiveSection(current.id);
@@ -66,6 +79,28 @@ export function MobileNavigator() {
     });
   }, [activeSection]);
 
+  const handleNavigate = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    id: string,
+  ) => {
+    event.preventDefault();
+
+    const element = document.getElementById(id);
+
+    if (!element) {
+      return;
+    }
+
+    const topOffset = id === "home" ? 0 : 88;
+    const targetTop = Math.max(element.offsetTop - topOffset, 0);
+
+    setActiveSection(id);
+    window.scrollTo({
+      top: targetTop,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
@@ -87,6 +122,7 @@ export function MobileNavigator() {
                   itemRefs.current[index] = element;
                 }}
                 href={item.href}
+                onClick={(event) => handleNavigate(event, item.id)}
                 className={`flex min-h-[60px] min-w-[76px] shrink-0 snap-center flex-col items-center justify-center rounded-[1.2rem] px-3 py-2 text-center transition-colors duration-300 sm:min-w-0 ${
                   isActive
                     ? "bg-[var(--color-brand-blue)]/12 text-white shadow-[0_0_18px_rgba(0,168,255,0.14)]"
