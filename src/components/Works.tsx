@@ -150,14 +150,17 @@ export function Works() {
       resetAutoAdvanceTimer();
     }
 
-    setRailStartIndex((current) => {
-      const nextStart =
+    setActiveIndex((currentActive) => {
+      const nextIndex =
         direction === 1
-          ? (current + 1) % projects.length
-          : (current - 1 + projects.length) % projects.length;
+          ? (currentActive + 1) % projects.length
+          : (currentActive - 1 + projects.length) % projects.length;
 
-      setActiveIndex(nextStart);
-      return nextStart;
+      setRailStartIndex((currentStart) =>
+        getNextRailStart(currentStart, nextIndex, direction),
+      );
+
+      return nextIndex;
     });
   };
 
@@ -219,8 +222,7 @@ export function Works() {
               Project Browser
             </p>
             <p className="max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
-              Browse through featured builds with a focused preview experience
-              instead of a standard grid.
+              Browse through the projects I have worked on before! Get a feel of what I can do through these previous works.
             </p>
           </div>
 
