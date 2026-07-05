@@ -9,10 +9,12 @@ import { BackgroundAnimation } from "@/components/BackgroundAnimation";
 import { Footer } from "@/components/Footer";
 import { ScrollCue } from "@/components/ScrollCue";
 import { MobileNavigator } from "@/components/MobileNavigator";
+import { InitialScrollReset } from "@/components/InitialScrollReset";
 
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-transparent pb-24 xl:pb-0">
+      <InitialScrollReset />
       <BackgroundAnimation />
       <Navbar />
       <MobileNavigator />

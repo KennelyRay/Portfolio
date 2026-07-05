@@ -74,6 +74,7 @@ export function Works() {
   const [railStartIndex, setRailStartIndex] = useState(0);
   const [autoAdvanceCycle, setAutoAdvanceCycle] = useState(0);
   const mobileProjectButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const mobileProjectRailRef = useRef<HTMLDivElement | null>(null);
 
   const activeProject = projects[activeIndex];
   const ActiveProjectIcon = activeProject.icon;
@@ -183,16 +184,25 @@ export function Works() {
   }, [autoAdvanceCycle, visibleCount]);
 
   useEffect(() => {
-    const activeButton = mobileProjectButtonRefs.current[activeIndex];
-
-    if (!activeButton) {
+    if (window.innerWidth >= 1280) {
       return;
     }
 
-    activeButton.scrollIntoView({
+    const activeButton = mobileProjectButtonRefs.current[activeIndex];
+    const rail = mobileProjectRailRef.current;
+
+    if (!activeButton || !rail) {
+      return;
+    }
+
+    const targetLeft =
+      activeButton.offsetLeft - rail.clientWidth / 2 + activeButton.clientWidth / 2;
+    const maxScrollLeft = rail.scrollWidth - rail.clientWidth;
+    const nextScrollLeft = Math.min(Math.max(targetLeft, 0), maxScrollLeft);
+
+    rail.scrollTo({
+      left: nextScrollLeft,
       behavior: "smooth",
-      block: "nearest",
-      inline: "center",
     });
   }, [activeIndex]);
 
@@ -355,7 +365,10 @@ export function Works() {
                 </p>
               </div>
 
-              <div className="-mx-4 overflow-x-auto px-4 pb-2 overscroll-x-contain sm:-mx-6 sm:px-6">
+              <div
+                ref={mobileProjectRailRef}
+                className="-mx-4 overflow-x-auto px-4 pb-2 overscroll-x-contain sm:-mx-6 sm:px-6"
+              >
                 <div className="flex snap-x snap-mandatory gap-3">
                 {projects.map((proj, idx) => {
                   const isActive = idx === activeIndex;
