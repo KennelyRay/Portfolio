@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  MessageSquareText,
   MonitorSmartphone,
   ShoppingCart,
   Store,
@@ -66,6 +67,14 @@ const projects = [
     link: "https://kendal-store.vercel.app/#/login",
     thumbnail: "/KendalStoreThumbnail.png",
     icon: Store,
+  },
+  {
+    title: "Navibot",
+    desc: "An academic capstone enrollment chatbot built to guide students through enrollment questions and portal-related assistance.",
+    role: "Academic Capstone",
+    link: "https://tektitans-navibot.vercel.app/",
+    thumbnail: "/NavibotThumbnail.png",
+    icon: MessageSquareText,
   },
 ];
 
