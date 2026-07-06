@@ -25,7 +25,7 @@ const projects = [
   {
     title: "Human Resources Information System",
     desc: "An attendance management web app with reporting, employee management, terminal tools, and settings.",
-    role: "Developer",
+    role: "Developer/DB Engineer",
     link: "https://j-attendance-tracker.vercel.app/",
     thumbnail: "/AttendanceTrackerThumbnail.png",
     icon: MonitorSmartphone,
@@ -33,7 +33,7 @@ const projects = [
   {
     title: "MasterCraft Bug Hunter",
     desc: "A bug reporting platform built for clean issue tracking, organized triage, and reward-based bug submissions.",
-    role: "Developer",
+    role: "Developer/DB Engineer",
     link: "https://mcbughunter.vercel.app/",
     thumbnail: "/MastercraftBughunterThumbnail.png",
     icon: Bug,
@@ -49,7 +49,7 @@ const projects = [
   {
     title: "DENR Cashflow System",
     desc: "A secure cashflow tracking and reporting system designed for streamlined financial monitoring.",
-    role: "Developer",
+    role: "Developer/DB Engineer",
     link: "https://denr-cashflow-system.vercel.app/login",
     thumbnail: "/CashflowSystemThumbnail.png",
     icon: WalletCards,
@@ -57,7 +57,7 @@ const projects = [
   {
     title: "DENR Reservation System",
     desc: "A dedicated reservation management system built for DENR Baguio.",
-    role: "Developer / Database Engineer",
+    role: "Developer/DB Engineer",
     link: "https://denr-car-reservation.vercel.app/",
     thumbnail: "/ReservationSystemThumbnail.png",
     icon: CalendarDays,
