@@ -11,6 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  Folder,
+  FolderOpen,
   MessageSquareText,
   MonitorSmartphone,
   ShoppingCart,
@@ -384,6 +386,7 @@ export function Works() {
                 {projects.map((proj, idx) => {
                   const isActive = idx === activeIndex;
                   const ProjectIcon = proj.icon;
+                  const FolderIcon = isActive ? FolderOpen : Folder;
 
                   return (
                     <motion.button
@@ -394,19 +397,32 @@ export function Works() {
                       }}
                       onClick={() => selectProject(idx)}
                       whileTap={{ scale: 0.98 }}
-                      className={`min-h-[148px] w-[220px] shrink-0 snap-center rounded-[1.4rem] border p-4 text-left transition-all duration-300 sm:w-[250px] ${
+                      className={`relative min-h-[164px] w-[220px] shrink-0 snap-center overflow-hidden rounded-[1.4rem] border px-4 pb-4 pt-5 text-left transition-all duration-300 sm:w-[250px] ${
                         isActive
-                          ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 shadow-[0_0_24px_rgba(0,168,255,0.12)]"
-                          : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                          ? "border-[var(--color-brand-blue)] bg-[linear-gradient(180deg,rgba(0,168,255,0.16),rgba(7,23,38,0.92))] shadow-[0_0_24px_rgba(0,168,255,0.12)]"
+                          : "border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(6,14,22,0.92))] hover:border-white/20"
                       }`}
                       aria-pressed={isActive}
                     >
+                      <div
+                        className={`absolute left-4 top-0 h-4 w-20 rounded-b-[0.95rem] border-x border-b ${
+                          isActive
+                            ? "border-[var(--color-brand-blue)]/45 bg-[var(--color-brand-blue)]/14"
+                            : "border-white/10 bg-white/[0.04]"
+                        }`}
+                      />
                       <div className="mb-3 flex items-start justify-between gap-4">
-                        <p className="text-xs font-bold tracking-[0.28em] text-gray-500">
-                          {String(idx + 1).padStart(2, "0")}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <FolderIcon className="h-4 w-4 text-[var(--color-brand-blue)]" />
+                          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gray-500">
+                            Folder
+                          </p>
+                        </div>
                         <ProjectIcon className="h-5 w-5 text-[var(--color-brand-blue)]" />
                       </div>
+                      <p className="text-xs font-bold tracking-[0.28em] text-gray-500">
+                        {String(idx + 1).padStart(2, "0")}
+                      </p>
                       <h3 className="text-base font-semibold leading-snug text-white">
                         {proj.title}
                       </h3>
@@ -451,6 +467,7 @@ export function Works() {
                   {visibleProjects.map(({ project: proj, index: idx }) => {
                     const isActive = idx === activeIndex;
                     const ProjectIcon = proj.icon;
+                    const FolderIcon = isActive ? FolderOpen : Folder;
 
                     return (
                       <motion.button
@@ -458,21 +475,36 @@ export function Works() {
                         type="button"
                         onClick={() => selectProject(idx)}
                         whileHover={{ x: 6 }}
-                        className={`w-full rounded-2xl border p-4 text-left transition-all duration-300 ${
+                        className={`relative w-full overflow-hidden rounded-[1.65rem] border px-5 pb-5 pt-6 text-left transition-all duration-300 ${
                           isActive
-                            ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 shadow-[0_0_30px_rgba(0,168,255,0.15)]"
-                            : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                            ? "border-[var(--color-brand-blue)] bg-[linear-gradient(180deg,rgba(0,168,255,0.14),rgba(7,23,38,0.9))] shadow-[0_0_30px_rgba(0,168,255,0.15)]"
+                            : "border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(6,14,22,0.9))] hover:border-white/20"
                         }`}
                         aria-pressed={isActive}
                       >
+                        <div
+                          className={`absolute left-5 top-0 h-4 w-24 rounded-b-[1rem] border-x border-b ${
+                            isActive
+                              ? "border-[var(--color-brand-blue)]/45 bg-[var(--color-brand-blue)]/14"
+                              : "border-white/10 bg-white/[0.04]"
+                          }`}
+                        />
                         <div className="mb-4 flex items-start justify-between gap-4">
-                          <div>
-                            <p className="text-xs font-bold tracking-[0.3em] text-gray-500">
-                              {String(idx + 1).padStart(2, "0")}
-                            </p>
-                            <h3 className="mt-2 text-lg font-semibold text-white">
-                              {proj.title}
-                            </h3>
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                              <FolderIcon className="h-4 w-4 text-[var(--color-brand-blue)]" />
+                              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gray-500">
+                                Project Folder
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold tracking-[0.3em] text-gray-500">
+                                {String(idx + 1).padStart(2, "0")}
+                              </p>
+                              <h3 className="mt-2 text-lg font-semibold text-white">
+                                {proj.title}
+                              </h3>
+                            </div>
                           </div>
                           <ProjectIcon className="h-6 w-6 text-[var(--color-brand-blue)]" />
                         </div>
