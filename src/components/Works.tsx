@@ -462,7 +462,7 @@ export function Works() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -24 }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
-                  className="flex h-full flex-col justify-center space-y-3"
+                  className="grid h-full grid-cols-2 content-center gap-3"
                 >
                   {visibleProjects.map(({ project: proj, index: idx }) => {
                     const isActive = idx === activeIndex;
@@ -474,41 +474,28 @@ export function Works() {
                         key={`${proj.title}-${idx}`}
                         type="button"
                         onClick={() => selectProject(idx)}
-                        whileHover={{ x: 6 }}
-                        className={`relative w-full overflow-hidden rounded-[1.65rem] border px-5 pb-5 pt-6 text-left transition-all duration-300 ${
+                        whileHover={{ y: -5, scale: 1.02 }}
+                        className={`relative flex min-h-[148px] w-full flex-col items-center justify-center overflow-hidden rounded-[1.65rem] border px-4 pb-5 pt-5 text-center transition-all duration-300 ${
                           isActive
-                            ? "border-[var(--color-brand-blue)] bg-[linear-gradient(180deg,rgba(0,168,255,0.14),rgba(7,23,38,0.9))] shadow-[0_0_30px_rgba(0,168,255,0.15)]"
+                            ? "border-[var(--color-brand-blue)] bg-[linear-gradient(180deg,rgba(0,168,255,0.16),rgba(7,23,38,0.92))] shadow-[0_0_30px_rgba(0,168,255,0.15)]"
                             : "border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(6,14,22,0.9))] hover:border-white/20"
                         }`}
                         aria-pressed={isActive}
                       >
-                        <div
-                          className={`absolute left-5 top-0 h-4 w-24 rounded-b-[1rem] border-x border-b ${
-                            isActive
-                              ? "border-[var(--color-brand-blue)]/45 bg-[var(--color-brand-blue)]/14"
-                              : "border-white/10 bg-white/[0.04]"
-                          }`}
-                        />
-                        <div className="mb-4 flex items-start justify-between gap-4">
-                          <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                              <FolderIcon className="h-4 w-4 text-[var(--color-brand-blue)]" />
-                              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gray-500">
-                                Project Folder
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold tracking-[0.3em] text-gray-500">
-                                {String(idx + 1).padStart(2, "0")}
-                              </p>
-                              <h3 className="mt-2 text-lg font-semibold text-white">
-                                {proj.title}
-                              </h3>
-                            </div>
-                          </div>
-                          <ProjectIcon className="h-6 w-6 text-[var(--color-brand-blue)]" />
+                        <div className="absolute left-4 top-4 text-[10px] font-bold tracking-[0.28em] text-gray-500">
+                          {String(idx + 1).padStart(2, "0")}
                         </div>
-                        <p className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--color-brand-blue)]">
+                        <div className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-black/25">
+                          <ProjectIcon className="h-4 w-4 text-[var(--color-brand-blue)]" />
+                        </div>
+                        <FolderIcon className="h-11 w-11 text-[var(--color-brand-blue)]" />
+                        <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.24em] text-gray-500">
+                          Folder
+                        </p>
+                        <h3 className="mt-2 line-clamp-2 text-sm font-semibold leading-snug text-white">
+                          {proj.title}
+                        </h3>
+                        <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--color-brand-blue)]">
                           {proj.role}
                         </p>
                       </motion.button>
