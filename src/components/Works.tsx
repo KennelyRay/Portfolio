@@ -6,6 +6,7 @@ import Image from "next/image";
 import {
   ArrowUpRight,
   Bug,
+  Bus,
   CalendarDays,
   ChevronDown,
   ChevronLeft,
@@ -69,6 +70,14 @@ const projects = [
     link: "https://kendal-store.vercel.app/#/login",
     thumbnail: "/KendalStoreThumbnail.png",
     icon: Store,
+  },
+  {
+    title: "AgLugan",
+    desc: "A jeepney seat reservation platform with live queues, guaranteed seats, and cashless payments for commuters on the Bakakeng route.",
+    role: "Lead Developer",
+    link: "https://aglugan.vercel.app/",
+    thumbnail: "/AgluganThumbnail.png",
+    icon: Bus,
   },
   {
     title: "Navibot",
