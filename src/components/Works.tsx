@@ -16,6 +16,7 @@ import {
   FolderOpen,
   MessageSquareText,
   MonitorSmartphone,
+  Plane,
   ShoppingCart,
   Store,
   WalletCards,
@@ -46,6 +47,14 @@ const projects = [
     link: "https://vertixhub.vercel.app/home",
     thumbnail: "/VertixHubThumbnail.png",
     icon: ShoppingCart,
+  },
+  {
+    title: "VertixFlights",
+    desc: "A flight booking platform built for searching flights, booking airline tickets, and a smooth travel reservation experience.",
+    role: "Developer/DB Engineer",
+    link: "https://vertix-flights.vercel.app",
+    thumbnail: "/VertixFlightsThumbnail.png",
+    icon: Plane,
   },
   {
     title: "DENR Cashflow System",
