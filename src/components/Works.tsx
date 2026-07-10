@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-const projects = [
+const allProjects = [
   {
     title: "Human Resources Information System",
     desc: "An attendance management web app with reporting, employee management, terminal tools, and settings.",
@@ -98,13 +98,33 @@ const projects = [
   },
 ];
 
+const featuredTitles = [
+  "Human Resources Information System",
+  "VertixFlights",
+  "Navibot",
+  "DENR Reservation System",
+];
+
+const featuredProjects = featuredTitles.flatMap((title) =>
+  allProjects.filter((project) => project.title === title),
+);
+
+const worksTabs = [
+  { id: "featured", label: "Featured Works" },
+  { id: "all", label: "All Projects" },
+] as const;
+
+type WorksTab = (typeof worksTabs)[number]["id"];
+
 export function Works() {
+  const [activeTab, setActiveTab] = useState<WorksTab>("featured");
   const [activeIndex, setActiveIndex] = useState(0);
   const [railStartIndex, setRailStartIndex] = useState(0);
   const [autoAdvanceCycle, setAutoAdvanceCycle] = useState(0);
   const mobileProjectButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const mobileProjectRailRef = useRef<HTMLDivElement | null>(null);
 
+  const projects = activeTab === "featured" ? featuredProjects : allProjects;
   const activeProject = projects[activeIndex];
   const ActiveProjectIcon = activeProject.icon;
   const totalProjects = String(projects.length).padStart(2, "0");
@@ -171,7 +191,7 @@ export function Works() {
   };
 
   const scrollRail = (direction: 1 | -1, shouldResetTimer = false) => {
-    if (projects.length <= visibleCount) {
+    if (projects.length <= 1) {
       return;
     }
 
@@ -193,6 +213,17 @@ export function Works() {
     });
   };
 
+  const selectTab = (tab: WorksTab) => {
+    if (tab === activeTab) {
+      return;
+    }
+
+    resetAutoAdvanceTimer();
+    setActiveTab(tab);
+    setActiveIndex(0);
+    setRailStartIndex(0);
+  };
+
   const selectProject = (index: number) => {
     resetAutoAdvanceTimer();
     setActiveIndex(index);
@@ -203,7 +234,7 @@ export function Works() {
   };
 
   useEffect(() => {
-    if (projects.length <= visibleCount) {
+    if (projects.length <= 1) {
       return;
     }
 
@@ -213,7 +244,7 @@ export function Works() {
     }, 15000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [autoAdvanceCycle, visibleCount]);
+  }, [autoAdvanceCycle, projects.length]);
 
   useEffect(() => {
     if (window.innerWidth >= 1280) {
@@ -244,6 +275,35 @@ export function Works() {
         <h2 className="text-center text-4xl font-bold tracking-tight uppercase sm:text-6xl">
           MY <span className="text-[var(--color-brand-blue)]">WORKS</span>
         </h2>
+
+        <div className="flex justify-center">
+          <div
+            role="tablist"
+            aria-label="Project categories"
+            className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1.5"
+          >
+            {worksTabs.map((tab) => {
+              const isActiveTab = tab.id === activeTab;
+
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActiveTab}
+                  onClick={() => selectTab(tab.id)}
+                  className={`rounded-full px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors sm:px-6 sm:text-xs ${
+                    isActiveTab
+                      ? "bg-[var(--color-brand-blue)] text-black"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <div className="mb-2 flex flex-col gap-4 xl:mb-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="space-y-2">
@@ -475,7 +535,7 @@ export function Works() {
             <div className="flex-1 overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={railStartIndex}
+                  key={`${activeTab}-${railStartIndex}`}
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -24 }}
