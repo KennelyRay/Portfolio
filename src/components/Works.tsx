@@ -131,8 +131,8 @@ export function Works() {
     }
 
     return direction === 1
-      ? (currentStart + 1) % projects.length
-      : (currentStart - 1 + projects.length) % projects.length;
+      ? nextIndex % projects.length
+      : (nextIndex - (visibleCount - 1) + projects.length) % projects.length;
   };
 
   const visibleProjects = getVisibleIndices(railStartIndex).map((index) => ({
