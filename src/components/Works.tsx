@@ -14,6 +14,7 @@ import {
   ChevronUp,
   Folder,
   FolderOpen,
+  Library,
   MessageSquareText,
   MonitorSmartphone,
   Plane,
@@ -55,6 +56,14 @@ const allProjects = [
     link: "https://vertix-flights.vercel.app",
     thumbnail: "/VertixFlightsThumbnail.png",
     icon: Plane,
+  },
+  {
+    title: "AniVertix",
+    desc: "An anime and manga database platform built for browsing titles, exploring details, and discovering new series.",
+    role: "Developer/DB Engineer",
+    link: "https://anivertix.vercel.app/",
+    thumbnail: "/AnivertixThumbnail.png",
+    icon: Library,
   },
   {
     title: "DENR Cashflow System",
