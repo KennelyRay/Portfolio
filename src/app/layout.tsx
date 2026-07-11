@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ken-Dev Portfolio | Web Developer",
+  title: "Ken-Portfolio | Web Developer",
   description: "Web Developer Portfolio inspired by Lando Norris website",
 };
 
