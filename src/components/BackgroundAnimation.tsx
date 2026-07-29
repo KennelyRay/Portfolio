@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import DotField from "./DotField";
 
 export function BackgroundAnimation() {
   return (
@@ -38,6 +39,22 @@ export function BackgroundAnimation() {
         }}
         className="absolute bottom-0 right-0 w-[50vw] h-[50vw] bg-[var(--color-brand-blue)]/20 rounded-full blur-[100px] mix-blend-screen"
       />
+
+      {/* Cursor-reactive dot field, pinned to the viewport so it stays
+          visible across every section while scrolling */}
+      <div className="absolute inset-0">
+        <DotField
+          dotRadius={1.5}
+          dotSpacing={18}
+          bulgeStrength={67}
+          glowRadius={160}
+          sparkle={false}
+          waveAmplitude={0}
+          gradientFrom="rgba(0, 168, 255, 0.35)"
+          gradientTo="rgba(0, 168, 255, 0.12)"
+          glowColor="#0e3a52"
+        />
+      </div>
     </div>
   );
 }

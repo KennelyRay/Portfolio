@@ -12,8 +12,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Folder,
-  FolderOpen,
+  Folder as FolderClosedIcon,
+  FolderOpen as FolderOpenIcon,
   Library,
   MessageSquareText,
   MonitorSmartphone,
@@ -23,6 +23,8 @@ import {
   WalletCards,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import CardSwap, { Card } from "./CardSwap";
+import Folder from "./Folder";
 
 const allProjects = [
   {
@@ -132,6 +134,7 @@ export function Works() {
   const [autoAdvanceCycle, setAutoAdvanceCycle] = useState(0);
   const mobileProjectButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const mobileProjectRailRef = useRef<HTMLDivElement | null>(null);
+  const projectBrowserRef = useRef<HTMLDivElement | null>(null);
 
   const projects = activeTab === "featured" ? featuredProjects : allProjects;
   const activeProject = projects[activeIndex];
@@ -233,6 +236,19 @@ export function Works() {
     setRailStartIndex(0);
   };
 
+  // Spotlight cards mirror `featuredProjects`, so the index maps straight onto
+  // the browser below once the Featured tab is active.
+  const selectSpotlightProject = (index: number) => {
+    resetAutoAdvanceTimer();
+    setActiveTab("featured");
+    setActiveIndex(index);
+    setRailStartIndex(0);
+    projectBrowserRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
+
   const selectProject = (index: number) => {
     resetAutoAdvanceTimer();
     setActiveIndex(index);
@@ -285,6 +301,91 @@ export function Works() {
           MY <span className="text-[var(--color-brand-blue)]">WORKS</span>
         </h2>
 
+        {/* Featured spotlight. Hidden on the narrowest screens, where the
+            3D stack scales down too far to stay legible and the mobile
+            project rail below already covers the same ground. */}
+        <div className="hidden gap-8 sm:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)] xl:items-center xl:gap-12">
+          <div className="space-y-5">
+            <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--color-brand-blue)]">
+              Featured Spotlight
+            </p>
+            <h3 className="text-3xl font-bold leading-tight tracking-tight text-white xl:text-[2.5rem]">
+              A rotating look at the builds
+              <br className="hidden xl:block" /> I&apos;m proudest of.
+            </h3>
+            <p className="max-w-xl text-sm leading-relaxed text-gray-400 sm:text-base">
+              These are the projects that best show how I work end to end — from
+              database design and business logic to the interface people
+              actually touch. Tap a card to open it in the browser below.
+            </p>
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <span className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                {String(allProjects.length).padStart(2, "0")} Projects Shipped
+              </span>
+              <span className="rounded-full border border-[var(--color-brand-blue)]/40 bg-[var(--color-brand-blue)]/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--color-brand-blue)]">
+                {String(featuredProjects.length).padStart(2, "0")} Featured
+              </span>
+            </div>
+          </div>
+
+          <div className="relative h-[430px] w-full">
+            {/* Inset from the right so the stack, which fans up and to the
+                right, stays inside the section instead of running off-screen. */}
+            {/* bottom-[50px] offsets the container's own translate(_, 20%) of
+                its 250px height, so the front card lands on the box floor. */}
+            <div className="absolute bottom-[50px] left-0 top-0 right-[110px] sm:right-[130px] xl:right-[150px]">
+              <CardSwap
+                width={320}
+                height={250}
+                cardDistance={45}
+                verticalDistance={55}
+                delay={4200}
+                pauseOnHover
+                skewAmount={5}
+                easing="elastic"
+                onCardClick={selectSpotlightProject}
+              >
+                {featuredProjects.map((project) => (
+                  <Card
+                    key={project.title}
+                    customClass="cursor-pointer overflow-hidden border-white/15 bg-[#06111d] shadow-[0_24px_70px_-24px_rgba(0,0,0,0.95)]"
+                  >
+                    <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-black/40 px-4 py-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
+                        <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
+                        <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
+                      </div>
+                      <p className="truncate text-[10px] font-medium uppercase tracking-[0.18em] text-gray-500">
+                        {project.link.replace(/^https?:\/\//, "")}
+                      </p>
+                    </div>
+
+                    <div className="relative h-[148px] w-full overflow-hidden bg-[#05101b]">
+                      <Image
+                        src={project.thumbnail}
+                        alt={`${project.title} preview`}
+                        fill
+                        sizes="320px"
+                        className="object-cover object-top"
+                      />
+                    </div>
+
+                    <div className="space-y-1 px-4 py-3">
+                      <h4 className="truncate text-sm font-semibold leading-snug text-white">
+                        {project.title}
+                      </h4>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--color-brand-blue)]">
+                        {project.role}
+                      </p>
+                    </div>
+                  </Card>
+                ))}
+              </CardSwap>
+            </div>
+          </div>
+        </div>
+
         <div className="flex justify-center">
           <div
             role="tablist"
@@ -314,14 +415,44 @@ export function Works() {
           </div>
         </div>
 
-        <div className="mb-2 flex flex-col gap-4 xl:mb-6 xl:flex-row xl:items-center xl:justify-between">
-          <div className="space-y-2">
-            <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--color-brand-blue)]">
-              Project Browser
-            </p>
-            <p className="max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
-              Browse through the projects I have worked on before! Get a feel of what I can do through these previous works.
-            </p>
+        <div
+          ref={projectBrowserRef}
+          className="mb-2 flex flex-col gap-4 xl:mb-6 xl:flex-row xl:items-center xl:justify-between"
+        >
+          <div className="flex items-center gap-6">
+            {/* The box is oversized on purpose: the papers fan up and to the
+                left when the folder opens and would otherwise collide with
+                the copy beside it. */}
+            <div className="hidden shrink-0 flex-col items-center gap-3 sm:flex">
+              <div className="flex h-[150px] w-[230px] items-end justify-center">
+                <Folder
+                  color="#00a8ff"
+                  label="project archive"
+                  items={featuredProjects.slice(0, 3).map((project) => (
+                    <Image
+                      key={project.title}
+                      src={project.thumbnail}
+                      alt=""
+                      fill
+                      sizes="90px"
+                      className="object-cover object-top"
+                    />
+                  ))}
+                />
+              </div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gray-500">
+                Project Archive
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--color-brand-blue)]">
+                Project Browser
+              </p>
+              <p className="max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
+                Browse through the projects I have worked on before! Get a feel of what I can do through these previous works.
+              </p>
+            </div>
           </div>
 
           <div className="hidden items-center justify-between gap-4 sm:justify-end xl:flex">
@@ -473,7 +604,7 @@ export function Works() {
                 {projects.map((proj, idx) => {
                   const isActive = idx === activeIndex;
                   const ProjectIcon = proj.icon;
-                  const FolderIcon = isActive ? FolderOpen : Folder;
+                  const FolderIcon = isActive ? FolderOpenIcon : FolderClosedIcon;
 
                   return (
                     <motion.button
@@ -554,7 +685,7 @@ export function Works() {
                   {visibleProjects.map(({ project: proj, index: idx }) => {
                     const isActive = idx === activeIndex;
                     const ProjectIcon = proj.icon;
-                    const FolderIcon = isActive ? FolderOpen : Folder;
+                    const FolderIcon = isActive ? FolderOpenIcon : FolderClosedIcon;
 
                     return (
                       <motion.button

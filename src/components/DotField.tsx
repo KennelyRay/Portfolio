@@ -132,14 +132,30 @@ const DotField = memo(function DotField({
       canvas!.style.height = `${h}px`;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      sizeRef.current = {
-        w,
-        h,
-        offsetX: rect.left + window.scrollX,
-        offsetY: rect.top + window.scrollY,
-      };
+      sizeRef.current = { w, h, offsetX: rect.left, offsetY: rect.top };
 
       buildDots(w, h);
+    }
+
+    // Offsets are viewport-relative and paired with clientX/clientY, so the
+    // field tracks the cursor correctly whether its container is fixed or
+    // scrolls with the document. For a scrolling container rect.top drifts as
+    // the page moves, so re-measure on scroll (rAF-throttled).
+    let offsetQueued = false;
+
+    function measureOffsets() {
+      offsetQueued = false;
+      const parent = canvas!.parentElement;
+      if (!parent) return;
+      const rect = parent.getBoundingClientRect();
+      sizeRef.current.offsetX = rect.left;
+      sizeRef.current.offsetY = rect.top;
+    }
+
+    function onScroll() {
+      if (offsetQueued) return;
+      offsetQueued = true;
+      requestAnimationFrame(measureOffsets);
     }
 
     function buildDots(w: number, h: number) {
@@ -164,8 +180,8 @@ const DotField = memo(function DotField({
 
     function onMouseMove(e: MouseEvent) {
       const s = sizeRef.current;
-      mouseRef.current.x = e.pageX - s.offsetX;
-      mouseRef.current.y = e.pageY - s.offsetY;
+      mouseRef.current.x = e.clientX - s.offsetX;
+      mouseRef.current.y = e.clientY - s.offsetY;
     }
 
     function updateMouseSpeed() {
@@ -282,6 +298,7 @@ const DotField = memo(function DotField({
 
     doResize();
     window.addEventListener("resize", resize);
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     rafRef.current = requestAnimationFrame(tick);
 
@@ -295,6 +312,7 @@ const DotField = memo(function DotField({
       clearInterval(speedInterval);
       clearTimeout(resizeTimer);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("mousemove", onMouseMove);
     };
   }, []);
