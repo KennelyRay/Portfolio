@@ -22,7 +22,7 @@ import {
   Store,
   WalletCards,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const allProjects = [
   {
@@ -124,6 +124,39 @@ const worksTabs = [
 ] as const;
 
 type WorksTab = (typeof worksTabs)[number]["id"];
+
+// Manila-folder tab: square left edge, angled right edge.
+const FOLDER_TAB_CLIP = "polygon(0 0, calc(100% - 24px) 0, 100% 100%, 0 100%)";
+
+/**
+ * A clip-path can't render a border, so the outline is faked with two stacked
+ * layers: a border-coloured plate and a fill inset by 1px on the sides. The
+ * fill also bleeds 1px past the bottom to cover the panel's top border, which
+ * makes the tab and the panel read as one continuous folder edge.
+ */
+function FolderTab({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`inline-flex ${className}`}>
+      <div
+        className="absolute inset-0 bg-white/10"
+        style={{ clipPath: FOLDER_TAB_CLIP }}
+      />
+      <div
+        className="absolute -bottom-px left-px right-px top-px bg-[#06111d]/90"
+        style={{ clipPath: FOLDER_TAB_CLIP }}
+      />
+      <div className="relative flex items-center gap-2 py-2.5 pl-5 pr-11">
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export function Works() {
   const [activeTab, setActiveTab] = useState<WorksTab>("featured");
@@ -381,79 +414,88 @@ export function Works() {
               </div>
             </div>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`${activeProject.title}-mobile`}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -24 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                className="overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#06111d]/90"
-              >
-                <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-red-400/80" />
-                    <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
-                    <span className="h-3 w-3 rounded-full bg-green-400/80" />
-                  </div>
-                  <p className="max-w-[58%] truncate text-[10px] font-medium uppercase tracking-[0.18em] text-gray-500 sm:text-xs">
-                    {activeProject.link.replace(/^https?:\/\//, "")}
-                  </p>
-                </div>
+            <div className="relative pt-9">
+              <FolderTab className="absolute left-0 top-0">
+                <FolderOpen className="h-4 w-4 text-[var(--color-brand-blue)]" />
+                <span className="text-[11px] font-bold uppercase tracking-[0.26em] text-gray-400">
+                  {String(activeIndex + 1).padStart(2, "0")} / {totalProjects}
+                </span>
+              </FolderTab>
 
-                <div className="relative h-[240px] overflow-hidden bg-[#05101b] sm:h-[320px]">
-                  {"thumbnail" in activeProject ? (
-                    <Image
-                      src={activeProject.thumbnail}
-                      alt={`${activeProject.title} homepage preview`}
-                      fill
-                      sizes="100vw"
-                      className="h-full w-full object-cover object-center"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gray-900">
-                      <ActiveProjectIcon className="h-20 w-20 text-[var(--color-brand-blue)]" />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`${activeProject.title}-mobile`}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -24 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="overflow-hidden rounded-[1.8rem] rounded-tl-none border border-white/10 bg-[#06111d]/90"
+                >
+                  <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="h-3 w-3 rounded-full bg-red-400/80" />
+                      <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
+                      <span className="h-3 w-3 rounded-full bg-green-400/80" />
                     </div>
-                  )}
-                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#06111d] to-transparent" />
-                </div>
-
-                <div className="space-y-5 p-4 sm:p-6">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-full border border-[var(--color-brand-blue)]/40 bg-[var(--color-brand-blue)]/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--color-brand-blue)] sm:px-4 sm:text-xs">
-                      {activeProject.role}
-                    </span>
-                    <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-gray-500 sm:text-xs">
-                      Mobile Spotlight
-                    </span>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h3 className="text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl">
-                      {activeProject.title}
-                    </h3>
-                    <p className="text-sm leading-relaxed text-gray-400 sm:text-[15px]">
-                      {activeProject.desc}
+                    <p className="max-w-[58%] truncate text-[10px] font-medium uppercase tracking-[0.18em] text-gray-500 sm:text-xs">
+                      {activeProject.link.replace(/^https?:\/\//, "")}
                     </p>
                   </div>
 
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <a
-                      href={activeProject.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-brand-blue)] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-black transition-transform duration-300 hover:scale-[1.02]"
-                    >
-                      Open Project
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                    </a>
-                    <div className="text-xs font-bold uppercase tracking-[0.28em] text-gray-500">
-                      Featured Build
+                  <div className="relative h-[240px] overflow-hidden bg-[#05101b] sm:h-[320px]">
+                    {"thumbnail" in activeProject ? (
+                      <Image
+                        src={activeProject.thumbnail}
+                        alt={`${activeProject.title} homepage preview`}
+                        fill
+                        sizes="100vw"
+                        className="h-full w-full object-cover object-center"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-gray-900">
+                        <ActiveProjectIcon className="h-20 w-20 text-[var(--color-brand-blue)]" />
+                      </div>
+                    )}
+                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#06111d] to-transparent" />
+                  </div>
+
+                  <div className="space-y-5 p-4 sm:p-6">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="rounded-full border border-[var(--color-brand-blue)]/40 bg-[var(--color-brand-blue)]/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--color-brand-blue)] sm:px-4 sm:text-xs">
+                        {activeProject.role}
+                      </span>
+                      <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-gray-500 sm:text-xs">
+                        Mobile Spotlight
+                      </span>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h3 className="text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl">
+                        {activeProject.title}
+                      </h3>
+                      <p className="text-sm leading-relaxed text-gray-400 sm:text-[15px]">
+                        {activeProject.desc}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <a
+                        href={activeProject.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-brand-blue)] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-black transition-transform duration-300 hover:scale-[1.02]"
+                      >
+                        Open Project
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </a>
+                      <div className="text-xs font-bold uppercase tracking-[0.28em] text-gray-500">
+                        Featured Build
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
@@ -604,7 +646,14 @@ export function Works() {
             ) : null}
           </div>
 
-          <div className="min-w-0">
+          <div className="relative min-w-0 pt-9">
+            <FolderTab className="absolute left-0 top-0">
+              <FolderOpen className="h-4 w-4 text-[var(--color-brand-blue)]" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.26em] text-gray-400">
+                Project {String(activeIndex + 1).padStart(2, "0")}
+              </span>
+            </FolderTab>
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeProject.title}
@@ -612,7 +661,7 @@ export function Works() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -24 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="h-full overflow-hidden rounded-[2rem] border border-white/10 bg-[#06111d]/90"
+                className="h-full overflow-hidden rounded-[2rem] rounded-tl-none border border-white/10 bg-[#06111d]/90"
               >
                 <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
                   <div className="flex items-center gap-2">
