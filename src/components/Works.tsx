@@ -126,7 +126,9 @@ const worksTabs = [
 type WorksTab = (typeof worksTabs)[number]["id"];
 
 // Manila-folder tab: square left edge, angled right edge.
-const FOLDER_TAB_CLIP = "polygon(0 0, calc(100% - 24px) 0, 100% 100%, 0 100%)";
+const FOLDER_TAB_CLIP = "polygon(0 0, calc(100% - 34px) 0, 100% 100%, 0 100%)";
+// Back cover peeking above the panel, mirrored so it angles the other way.
+const FOLDER_BACK_CLIP = "polygon(0 0, 100% 0, 100% 100%, 0 100%)";
 
 /**
  * A clip-path can't render a border, so the outline is faked with two stacked
@@ -144,16 +146,32 @@ function FolderTab({
   return (
     <div className={`inline-flex ${className}`}>
       <div
-        className="absolute inset-0 bg-white/10"
+        className="absolute inset-0 bg-[var(--color-brand-blue)]/55"
         style={{ clipPath: FOLDER_TAB_CLIP }}
       />
       <div
-        className="absolute -bottom-px left-px right-px top-px bg-[#06111d]/90"
+        className="absolute -bottom-px left-px right-px top-px bg-[linear-gradient(180deg,rgba(0,168,255,0.30),rgba(0,168,255,0.12))]"
         style={{ clipPath: FOLDER_TAB_CLIP }}
       />
-      <div className="relative flex items-center gap-2 py-2.5 pl-5 pr-11">
+      <div className="relative flex items-center gap-2.5 py-3.5 pl-6 pr-14">
         {children}
       </div>
+    </div>
+  );
+}
+
+/**
+ * The folder's back cover: a tinted strip sitting behind and above the preview
+ * panel, so the panel reads as the front flap tucked inside it.
+ */
+function FolderBack({ className = "" }: { className?: string }) {
+  return (
+    <div className={`pointer-events-none ${className}`}>
+      <div
+        className="absolute inset-0 rounded-t-[1.75rem] rounded-tl-none bg-[var(--color-brand-blue)]/40"
+        style={{ clipPath: FOLDER_BACK_CLIP }}
+      />
+      <div className="absolute inset-x-px top-px bottom-0 rounded-t-[1.7rem] rounded-tl-none bg-[linear-gradient(180deg,rgba(0,168,255,0.16),rgba(6,17,29,0.95))]" />
     </div>
   );
 }
@@ -414,10 +432,11 @@ export function Works() {
               </div>
             </div>
 
-            <div className="relative pt-9">
-              <FolderTab className="absolute left-0 top-0">
-                <FolderOpen className="h-4 w-4 text-[var(--color-brand-blue)]" />
-                <span className="text-[11px] font-bold uppercase tracking-[0.26em] text-gray-400">
+            <div className="relative pt-[64px]">
+              <FolderBack className="absolute inset-x-0 top-[46px] h-[60px]" />
+              <FolderTab className="absolute left-0 top-0 z-20">
+                <FolderOpen className="h-[18px] w-[18px] text-white" />
+                <span className="text-xs font-bold uppercase tracking-[0.28em] text-white">
                   {String(activeIndex + 1).padStart(2, "0")} / {totalProjects}
                 </span>
               </FolderTab>
@@ -429,7 +448,7 @@ export function Works() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -24 }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
-                  className="overflow-hidden rounded-[1.8rem] rounded-tl-none border border-white/10 bg-[#06111d]/90"
+                  className="relative z-10 overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#06111d]"
                 >
                   <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
                     <div className="flex items-center gap-2">
@@ -646,10 +665,11 @@ export function Works() {
             ) : null}
           </div>
 
-          <div className="relative min-w-0 pt-9">
-            <FolderTab className="absolute left-0 top-0">
-              <FolderOpen className="h-4 w-4 text-[var(--color-brand-blue)]" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.26em] text-gray-400">
+          <div className="relative min-w-0 pt-[70px]">
+            <FolderBack className="absolute inset-x-0 top-[46px] h-[70px]" />
+            <FolderTab className="absolute left-0 top-0 z-20">
+              <FolderOpen className="h-[18px] w-[18px] text-white" />
+              <span className="text-xs font-bold uppercase tracking-[0.28em] text-white">
                 Project {String(activeIndex + 1).padStart(2, "0")}
               </span>
             </FolderTab>
@@ -661,7 +681,7 @@ export function Works() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -24 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="h-full overflow-hidden rounded-[2rem] rounded-tl-none border border-white/10 bg-[#06111d]/90"
+                className="relative z-10 h-full overflow-hidden rounded-[2rem] border border-white/10 bg-[#06111d]"
               >
                 <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
                   <div className="flex items-center gap-2">
