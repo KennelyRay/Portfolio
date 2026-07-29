@@ -35,7 +35,7 @@ export function About() {
     }, 20000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [unlockStage]);
+  }, [unlockStage]);    
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
