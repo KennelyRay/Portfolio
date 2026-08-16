@@ -8,6 +8,7 @@ import {
   Bug,
   Bus,
   CalendarDays,
+  Car,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -25,6 +26,14 @@ import {
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const allProjects = [
+  {
+    title: "Vertixia Rental",
+    desc: "A car rental platform that lets customers preview rental cars through interactive 3D models before booking.",
+    role: "Developer",
+    link: "https://vertixia-rental.vercel.app/",
+    thumbnail: "/VertixiaRentalThumbnail.png",
+    icon: Car,
+  },
   {
     title: "Human Resources Information System",
     desc: "An attendance management web app with reporting, employee management, terminal tools, and settings.",
@@ -108,6 +117,7 @@ const allProjects = [
 ];
 
 const featuredTitles = [
+  "Vertixia Rental",
   "Human Resources Information System",
   "VertixFlights",
   "Navibot",
