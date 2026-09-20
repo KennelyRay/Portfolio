@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { markLoaded } from "@/lib/loading-signal";
 
 const bootMessages = [
   "INITIALIZING PORTFOLIO...",
@@ -18,11 +19,30 @@ const loadingTips = [
   "TIP: THE CONTACT SECTION IS ALWAYS UNLOCKED.",
 ];
 
+// The tip is picked per page load, which makes it client-only data. Choosing it
+// during render would make the server and client disagree and trip a hydration
+// mismatch, so it is served through a store: the server snapshot is stable and
+// the random pick swaps in once hydration is done.
+let clientTip: string | null = null;
+
+const getClientTip = () => {
+  if (clientTip === null) {
+    clientTip = loadingTips[Math.floor(Math.random() * loadingTips.length)];
+  }
+  return clientTip;
+};
+
+const getServerTip = () => loadingTips[0];
+
+const subscribeToNothing = () => () => {};
+
 export function LoadingScreen() {
   const [progress, setProgress] = useState(0);
   const [isDone, setIsDone] = useState(false);
-  const [tip] = useState(
-    () => loadingTips[Math.floor(Math.random() * loadingTips.length)],
+  const tip = useSyncExternalStore(
+    subscribeToNothing,
+    getClientTip,
+    getServerTip,
   );
 
   const messageIndex = Math.min(
@@ -47,7 +67,11 @@ export function LoadingScreen() {
       if (currentProgress < 100) {
         timeoutId = window.setTimeout(advance, Math.random() * 220 + 120);
       } else {
-        timeoutId = window.setTimeout(() => setIsDone(true), 650);
+        timeoutId = window.setTimeout(() => {
+          setIsDone(true);
+          // Release the hero reveal as the boot screen starts wiping away.
+          markLoaded();
+        }, 650);
       }
     };
 

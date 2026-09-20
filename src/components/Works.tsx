@@ -116,6 +116,9 @@ const allProjects = [
   },
 ];
 
+// Single source of truth for the count the hero advertises.
+export const projectCount = allProjects.length;
+
 const featuredTitles = [
   "Vertixia Rental",
   "Human Resources Information System",

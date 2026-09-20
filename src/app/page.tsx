@@ -4,7 +4,6 @@ import { About } from "@/components/About";
 import { TechStack } from "@/components/TechStack";
 import { Works } from "@/components/Works";
 import { Contact } from "@/components/Contact";
-import { Section } from "@/components/Section";
 import { BackgroundAnimation } from "@/components/BackgroundAnimation";
 import { Footer } from "@/components/Footer";
 import { ScrollCue } from "@/components/ScrollCue";
@@ -22,9 +21,7 @@ export default function Home() {
       <MobileNavigator />
       <ScrollCue />
       
-      <Section id="home" className="min-h-screen">
-        <Hero />
-      </Section>
+      <Hero />
 
       <Works />
       <TechStack />
