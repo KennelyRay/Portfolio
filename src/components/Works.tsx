@@ -2,7 +2,7 @@
 
 import { Section } from "./Section";
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
+import { LivePreview } from "./LivePreview";
 import {
   ArrowUpRight,
   Bug,
@@ -31,7 +31,6 @@ const allProjects = [
     desc: "A car rental platform that lets customers preview rental cars through interactive 3D models before booking.",
     role: "Developer",
     link: "https://vertixia-rental.vercel.app/",
-    thumbnail: "/VertixiaRentalThumbnail.png",
     icon: Car,
   },
   {
@@ -39,7 +38,6 @@ const allProjects = [
     desc: "An attendance management web app with reporting, employee management, terminal tools, and settings.",
     role: "Developer/DB Engineer",
     link: "https://j-attendance-tracker.vercel.app/",
-    thumbnail: "/AttendanceTrackerThumbnail.png",
     icon: MonitorSmartphone,
   },
   {
@@ -47,7 +45,6 @@ const allProjects = [
     desc: "A bug reporting platform built for clean issue tracking, organized triage, and reward-based bug submissions.",
     role: "Developer/DB Engineer",
     link: "https://mcbughunter.vercel.app/",
-    thumbnail: "/MastercraftBughunterThumbnail.png",
     icon: Bug,
   },
   {
@@ -55,7 +52,6 @@ const allProjects = [
     desc: "A premium computer hardware e-commerce platform built for browsing products, custom PC building, and a modern shopping experience.",
     role: "Developer",
     link: "https://vertixhub.vercel.app/home",
-    thumbnail: "/VertixHubThumbnail.png",
     icon: ShoppingCart,
   },
   {
@@ -63,7 +59,6 @@ const allProjects = [
     desc: "A flight booking platform built for searching flights, booking airline tickets, and a smooth travel reservation experience.",
     role: "Developer/DB Engineer",
     link: "https://vertix-flights.vercel.app",
-    thumbnail: "/VertixFlightsThumbnail.png",
     icon: Plane,
   },
   {
@@ -71,7 +66,6 @@ const allProjects = [
     desc: "An anime and manga database platform built for browsing titles, exploring details, and discovering new series.",
     role: "Developer/DB Engineer",
     link: "https://anivertix.vercel.app/",
-    thumbnail: "/AnivertixThumbnail.png",
     icon: Library,
   },
   {
@@ -79,7 +73,6 @@ const allProjects = [
     desc: "A secure cashflow tracking and reporting system designed for streamlined financial monitoring.",
     role: "Developer/DB Engineer",
     link: "https://denr-cashflow-system.vercel.app/login",
-    thumbnail: "/CashflowSystemThumbnail.png",
     icon: WalletCards,
   },
   {
@@ -87,7 +80,6 @@ const allProjects = [
     desc: "A dedicated reservation management system built for DENR Baguio.",
     role: "Developer/DB Engineer",
     link: "https://denr-car-reservation.vercel.app/",
-    thumbnail: "/ReservationSystemThumbnail.png",
     icon: CalendarDays,
   },
   {
@@ -95,7 +87,6 @@ const allProjects = [
     desc: "A point of sale system built for store management, inventory control, sales tracking, and secure access.",
     role: "Developer",
     link: "https://kendal-store.vercel.app/#/login",
-    thumbnail: "/KendalStoreThumbnail.png",
     icon: Store,
   },
   {
@@ -103,7 +94,6 @@ const allProjects = [
     desc: "A jeepney seat reservation platform with live queues, guaranteed seats, and cashless payments for commuters on the Bakakeng route.",
     role: "Lead Developer",
     link: "https://aglugan.vercel.app/",
-    thumbnail: "/AgluganThumbnail.png",
     icon: Bus,
   },
   {
@@ -111,7 +101,6 @@ const allProjects = [
     desc: "An academic capstone enrollment chatbot built to guide students through enrollment questions and portal-related assistance.",
     role: "Academic Capstone",
     link: "https://tektitans-navibot.vercel.app/",
-    thumbnail: "/NavibotThumbnail.png",
     icon: MessageSquareText,
   },
 ];
@@ -475,20 +464,13 @@ export function Works() {
                   </div>
 
                   <div className="relative h-[240px] overflow-hidden bg-[#05101b] sm:h-[320px]">
-                    {"thumbnail" in activeProject ? (
-                      <Image
-                        src={activeProject.thumbnail}
-                        alt={`${activeProject.title} homepage preview`}
-                        fill
-                        sizes="100vw"
-                        className="h-full w-full object-cover object-center"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-gray-900">
-                        <ActiveProjectIcon className="h-20 w-20 text-[var(--color-brand-blue)]" />
-                      </div>
-                    )}
-                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#06111d] to-transparent" />
+                    <LivePreview
+                      key={activeProject.link}
+                      url={activeProject.link}
+                      title={activeProject.title}
+                      icon={ActiveProjectIcon}
+                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#06111d] to-transparent" />
                   </div>
 
                   <div className="space-y-5 p-4 sm:p-6">
@@ -709,20 +691,13 @@ export function Works() {
 
                 <div className="grid xl:grid-cols-[minmax(0,1.5fr)_340px]">
                   <div className="relative h-[320px] overflow-hidden bg-[#05101b] sm:h-[400px] xl:h-[520px]">
-                    {"thumbnail" in activeProject ? (
-                      <Image
-                        src={activeProject.thumbnail}
-                        alt={`${activeProject.title} homepage preview`}
-                        fill
-                        sizes="(max-width: 1280px) 100vw, 70vw"
-                        className="h-full w-full object-cover object-center"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-gray-900 text-8xl">
-                        <ActiveProjectIcon className="h-24 w-24 text-[var(--color-brand-blue)]" />
-                      </div>
-                    )}
-                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#06111d] to-transparent" />
+                    <LivePreview
+                      key={activeProject.link}
+                      url={activeProject.link}
+                      title={activeProject.title}
+                      icon={ActiveProjectIcon}
+                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#06111d] to-transparent" />
                   </div>
 
                   <div className="flex flex-col justify-between gap-8 border-t border-white/10 p-5 sm:p-6 xl:border-l xl:border-t-0">
