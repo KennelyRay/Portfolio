@@ -7,7 +7,7 @@ import Image from "next/image";
 import { BriefcaseBusiness, GraduationCap, Lock, LockOpen } from "lucide-react";
 
 export function About() {
-  const profileImages = ["/Me2.jpg", "/Me.jpg"];
+  const profileImages = ["/me3.jpg", "/Me.jpg"];
   const [unlockStage, setUnlockStage] = useState<
     "locked" | "denied" | "hacking" | "unlocked"
   >("locked");
