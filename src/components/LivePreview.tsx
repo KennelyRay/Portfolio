@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { RotateCw, type LucideIcon } from "lucide-react";
 
 // The framed sites are rendered at a desktop viewport and scaled down, so the
@@ -27,26 +27,45 @@ export function LivePreview({
   url,
   title,
   icon,
-  embeddable = true,
+  embedHosts,
 }: {
   url: string;
   title: string;
   icon: LucideIcon;
-  embeddable?: boolean;
+  embedHosts?: string[];
 }) {
-  if (!embeddable) {
-    return <EmbedBlockedPoster url={url} icon={icon} />;
+  // null on the server and during hydration, so a restricted site starts on
+  // the poster and only swaps to the frame once we know where we are.
+  const pageHost = useSyncExternalStore(
+    subscribeToNothing,
+    () => window.location.hostname,
+    () => null,
+  );
+
+  if (embedHosts && (pageHost === null || !embedHosts.includes(pageHost))) {
+    return <EmbedBlockedPoster url={url} icon={icon} allowedHost={embedHosts[0]} />;
   }
 
   return <LiveFrame url={url} title={title} icon={icon} />;
 }
 
+const subscribeToNothing = () => () => {};
+
 /**
- * Stand-in for sites that forbid being framed. Requesting them would only get
- * the browser's "refused to connect" page, so nothing is loaded at all.
+ * Stand-in for sites whose CSP only lets specific hosts frame them. Requesting
+ * them anywhere else would only get the browser's "refused to connect" page,
+ * so nothing is loaded at all.
  */
-function EmbedBlockedPoster({ url, icon: Icon }: { url: string; icon: LucideIcon }) {
-  const host = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+function EmbedBlockedPoster({
+  url,
+  icon: Icon,
+  allowedHost,
+}: {
+  url: string;
+  icon: LucideIcon;
+  allowedHost: string;
+}) {
+  const host = new URL(url).hostname;
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#05101b]">
@@ -60,8 +79,8 @@ function EmbedBlockedPoster({ url, icon: Icon }: { url: string; icon: LucideIcon
           Opens in its own tab
         </p>
         <p className="max-w-xs font-mono text-[10px] leading-relaxed tracking-[0.14em] text-gray-400">
-          {host} does not allow embedding in other sites, so there is no live
-          preview here. Open the project to try it.
+          {host} only allows its live preview on {allowedHost}. Open the
+          project to try it.
         </p>
       </div>
     </div>
@@ -206,6 +225,7 @@ function LiveFrame({
             tabIndex={-1}
             loading="lazy"
             referrerPolicy="no-referrer"
+            allow="clipboard-write; fullscreen"
             // No allow-top-navigation, so a framed site cannot hijack the page.
             sandbox="allow-scripts allow-same-origin allow-forms"
             // A failed request still fires `load` for the browser's error

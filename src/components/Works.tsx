@@ -445,10 +445,10 @@ export function Works() {
                   <div className="relative h-[240px] overflow-hidden bg-[#05101b] sm:h-[320px]">
                     <LivePreview
                       key={activeProject.link}
-                      url={activeProject.link}
+                      url={activeProject.previewUrl ?? activeProject.link}
                       title={activeProject.title}
                       icon={ActiveProjectIcon}
-                      embeddable={activeProject.embeddable}
+                      embedHosts={activeProject.embedHosts}
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#06111d] to-transparent" />
                   </div>
@@ -678,10 +678,10 @@ export function Works() {
                   <div className="relative h-[320px] overflow-hidden bg-[#05101b] sm:h-[400px] xl:h-[520px]">
                     <LivePreview
                       key={activeProject.link}
-                      url={activeProject.link}
+                      url={activeProject.previewUrl ?? activeProject.link}
                       title={activeProject.title}
                       icon={ActiveProjectIcon}
-                      embeddable={activeProject.embeddable}
+                      embedHosts={activeProject.embedHosts}
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#06111d] to-transparent" />
                   </div>

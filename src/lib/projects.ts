@@ -20,10 +20,13 @@ export type Project = {
   role: string;
   link: string;
   icon: LucideIcon;
-  // False when the site sends X-Frame-Options / frame-ancestors that forbid
-  // embedding. Browsers then refuse the live preview, and a cross-origin page
-  // cannot detect that, so it has to be declared here.
-  embeddable?: boolean;
+  // Page the live preview loads, when it should differ from the public link
+  // (e.g. a demo mode that needs no sign-in).
+  previewUrl?: string;
+  // Hostnames the site's CSP frame-ancestors allows to embed it. Anywhere else
+  // the browser refuses the frame, and a cross-origin page cannot detect that,
+  // so the preview shows a poster instead. Omit when any site may embed it.
+  embedHosts?: string[];
 };
 
 // Newest first: the hero's "latest build" card reads the head of this list.
@@ -34,7 +37,8 @@ export const allProjects: Project[] = [
     role: "Sole Developer",
     link: "https://valovertix.vercel.app/",
     icon: Crosshair,
-    embeddable: false,
+    previewUrl: "https://valovertix.vercel.app/?demo=1",
+    embedHosts: ["ken-portfolio.me", "www.ken-portfolio.me"],
   },
   {
     title: "Vertixia Rental",
