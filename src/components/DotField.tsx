@@ -112,7 +112,14 @@ const DotField = memo(function DotField({
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let resizeTimer: ReturnType<typeof setTimeout>;
+    let gradient: CanvasGradient | null = null;
+    // The loop only runs while something is moving. A field at rest is drawn
+    // once and left alone, so an idle page costs nothing per frame (and the
+    // backdrop-blurred navbar above it stops re-blurring a changing canvas).
+    let running = false;
+    let lastTime = 0;
 
     function resize() {
       clearTimeout(resizeTimer);
@@ -135,6 +142,7 @@ const DotField = memo(function DotField({
       sizeRef.current = { w, h, offsetX: rect.left, offsetY: rect.top };
 
       buildDots(w, h);
+      wake();
     }
 
     // Offsets are viewport-relative and paired with clientX/clientY, so the
@@ -176,31 +184,54 @@ const DotField = memo(function DotField({
         }
       }
       dotsRef.current = dots;
+
+      // The gradient only depends on the canvas size, so build it once here
+      // instead of on every frame.
+      gradient = ctx!.createLinearGradient(0, 0, w, h);
+      gradient.addColorStop(0, p.gradientFrom);
+      gradient.addColorStop(1, p.gradientTo);
     }
 
     function onMouseMove(e: MouseEvent) {
       const s = sizeRef.current;
       mouseRef.current.x = e.clientX - s.offsetX;
       mouseRef.current.y = e.clientY - s.offsetY;
+      if (!reduceMotion.matches) wake();
     }
 
-    function updateMouseSpeed() {
+    function wake() {
+      if (running) return;
+      running = true;
+      // Speed is measured between frames; restart the measurement here so the
+      // time spent asleep does not read as one enormous jump.
+      const m = mouseRef.current;
+      m.prevX = m.x;
+      m.prevY = m.y;
+      lastTime = 0;
+      rafRef.current = requestAnimationFrame(tick);
+    }
+
+    // Normalised to a 20ms window so the field feels the same on a 60Hz and a
+    // 144Hz display.
+    function updateMouseSpeed(dt: number) {
       const m = mouseRef.current;
       const dx = m.prevX - m.x;
       const dy = m.prevY - m.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const dist = (Math.sqrt(dx * dx + dy * dy) * 20) / dt;
       m.speed += (dist - m.speed) * 0.5;
       if (m.speed < 0.001) m.speed = 0;
       m.prevX = m.x;
       m.prevY = m.y;
     }
 
-    const speedInterval = setInterval(updateMouseSpeed, 20);
-
     let frameCount = 0;
 
-    function tick() {
+    function tick(now: number) {
       frameCount++;
+      const dt = lastTime ? Math.min(now - lastTime, 100) : 16.7;
+      lastTime = now;
+      updateMouseSpeed(dt);
+
       const dots = dotsRef.current;
       const m = mouseRef.current;
       const { w, h } = sizeRef.current;
@@ -214,6 +245,7 @@ const DotField = memo(function DotField({
       const eng = engagement.current;
 
       glowOpacity.current += (eng - glowOpacity.current) * 0.08;
+      if (glowOpacity.current < 0.002) glowOpacity.current = 0;
 
       if (glowEl) {
         glowEl.setAttribute("cx", String(m.x));
@@ -223,15 +255,13 @@ const DotField = memo(function DotField({
 
       ctx!.clearRect(0, 0, w, h);
 
-      const grad = ctx!.createLinearGradient(0, 0, w, h);
-      grad.addColorStop(0, p.gradientFrom);
-      grad.addColorStop(1, p.gradientTo);
-      ctx!.fillStyle = grad;
+      ctx!.fillStyle = gradient ?? p.gradientFrom;
 
       const cr = p.cursorRadius;
       const crSq = cr * cr;
       const rad = p.dotRadius / 2;
       const isBulge = p.bulgeOnly;
+      let settled = eng === 0 && glowOpacity.current === 0;
 
       ctx!.beginPath();
 
@@ -269,6 +299,13 @@ const DotField = memo(function DotField({
           d.sy += (d.y - d.sy) * 0.1;
         }
 
+        if (
+          settled &&
+          (Math.abs(d.sx - d.ax) > 0.05 || Math.abs(d.sy - d.ay) > 0.05)
+        ) {
+          settled = false;
+        }
+
         let drawX = d.sx;
         let drawY = d.sy;
         if (p.waveAmplitude > 0) {
@@ -285,6 +322,10 @@ const DotField = memo(function DotField({
             ctx!.moveTo(drawX + rad, drawY);
             ctx!.arc(drawX, drawY, rad, 0, TWO_PI);
           }
+        } else if (rad <= 1) {
+          // At a pixel or two across, a square is indistinguishable from a
+          // circle and is far cheaper to rasterise thousands of times a frame.
+          ctx!.rect(drawX - rad, drawY - rad, rad * 2, rad * 2);
         } else {
           ctx!.moveTo(drawX + rad, drawY);
           ctx!.arc(drawX, drawY, rad, 0, TWO_PI);
@@ -293,6 +334,14 @@ const DotField = memo(function DotField({
 
       ctx!.fill();
 
+      // Waves and sparkle animate on their own, so they keep the loop alive.
+      const selfAnimating = p.waveAmplitude > 0 || p.sparkle;
+      if (settled && !selfAnimating) {
+        running = false;
+        rafRef.current = null;
+        return;
+      }
+
       rafRef.current = requestAnimationFrame(tick);
     }
 
@@ -300,16 +349,18 @@ const DotField = memo(function DotField({
     window.addEventListener("resize", resize);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("mousemove", onMouseMove, { passive: true });
-    rafRef.current = requestAnimationFrame(tick);
 
     rebuildRef.current = () => {
       const { w, h } = sizeRef.current;
-      if (w > 0 && h > 0) buildDots(w, h);
+      if (w > 0 && h > 0) {
+        buildDots(w, h);
+        wake();
+      }
     };
 
     return () => {
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-      clearInterval(speedInterval);
+      running = false;
       clearTimeout(resizeTimer);
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", onScroll);

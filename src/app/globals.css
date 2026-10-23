@@ -34,3 +34,116 @@
     color: var(--color-brand-black);
   }
 }
+
+/* Repeat visit in the same session: the head script sets data-booted before
+   first paint, so the boot screen never flashes up. */
+html[data-booted] [data-boot-screen] {
+  display: none;
+}
+
+/* Background orbs: soft edges from the gradient itself (no blur filter), and
+   the drift is transform-only so the compositor runs it off the main thread. */
+.bg-orb {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+.bg-orb-a {
+  top: -80px;
+  left: -80px;
+  width: calc(40vw + 160px);
+  height: calc(40vw + 160px);
+  background: radial-gradient(
+    circle closest-side,
+    rgba(0, 168, 255, 0.2) 0%,
+    rgba(0, 168, 255, 0.14) 45%,
+    rgba(0, 168, 255, 0) 100%
+  );
+  animation: orb-drift-a 20s linear infinite;
+}
+
+.bg-orb-b {
+  right: -100px;
+  bottom: -100px;
+  width: calc(50vw + 200px);
+  height: calc(50vw + 200px);
+  background: radial-gradient(
+    circle closest-side,
+    rgba(0, 168, 255, 0.2) 0%,
+    rgba(0, 168, 255, 0.14) 45%,
+    rgba(0, 168, 255, 0) 100%
+  );
+  animation: orb-drift-b 25s linear infinite;
+}
+
+@keyframes orb-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(100%, 100%, 0);
+  }
+}
+
+@keyframes orb-drift-b {
+  0%,
+  100% {
+    transform: translate3d(100%, 100%, 0);
+  }
+  50% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Hero ticker: two identical runs side by side, shifted by exactly one run. */
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-track {
+  animation: marquee 48s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Fills over the auto-advance interval so visitors can see when the project
+   browser will move on by itself. */
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes cue-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .bg-orb,
+  .marquee-track,
+  .motion-safe-only {
+    animation: none !important;
+  }
+}

@@ -1,31 +1,24 @@
 "use client";
 
 import { Section } from "./Section";
-import { Mail, Github, Linkedin, Instagram, ArrowUpRight } from "lucide-react";
+import { Mail, ArrowUpRight, Check, Copy } from "lucide-react";
 import { motion } from "framer-motion";
-
-const socialLinks = [
-  {
-    Icon: Github,
-    href: "https://github.com/KennelyRay",
-    label: "GitHub",
-    value: "@KennelyRay",
-  },
-  {
-    Icon: Linkedin,
-    href: "https://www.linkedin.com/in/kennely-ray-bucang-b432a710b/",
-    label: "LinkedIn",
-    value: "Kennely Ray Bucang",
-  },
-  {
-    Icon: Instagram,
-    href: "http://instagram.com/kennn.dev/",
-    label: "Instagram",
-    value: "@kennn.dev",
-  },
-];
+import { useState } from "react";
+import { EMAIL, socialLinks } from "@/lib/site";
 
 export function Contact() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.location.href = `mailto:${EMAIL}`;
+    }
+  };
+
   return (
     <Section id="contact" className="bg-transparent">
       <div className="space-y-12">
@@ -66,18 +59,36 @@ export function Contact() {
             </div>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <a
-                href="mailto:krbucang@gmail.com"
-                className="text-lg font-semibold text-white transition-colors hover:text-[var(--color-brand-blue)] sm:text-xl"
-              >
-                krbucang@gmail.com
-              </a>
+              <div className="flex min-w-0 items-center gap-2">
+                <a
+                  href={`mailto:${EMAIL}`}
+                  className="truncate text-lg font-semibold text-white transition-colors hover:text-[var(--color-brand-blue)] sm:text-xl"
+                >
+                  {EMAIL}
+                </a>
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-gray-400 transition-colors hover:border-[var(--color-brand-blue)]/40 hover:text-white"
+                  aria-label={copied ? "Email copied" : "Copy email address"}
+                  title={copied ? "Copied" : "Copy"}
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4 text-[var(--color-brand-blue)]" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </button>
+                <span role="status" className="sr-only">
+                  {copied ? "Email address copied to clipboard" : ""}
+                </span>
+              </div>
 
               <motion.a
-                href="mailto:krbucang@gmail.com"
+                href={`mailto:${EMAIL}`}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-brand-blue)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition-transform duration-300"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-brand-blue)] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.18em] text-black"
               >
                 Send Email
                 <ArrowUpRight className="h-3.5 w-3.5" />

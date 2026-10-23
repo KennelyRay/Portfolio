@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { LucideIcon } from "lucide-react";
+import { RotateCw, type LucideIcon } from "lucide-react";
 
 // The framed sites are rendered at a desktop viewport and scaled down, so the
 // preview shows the real desktop layout rather than each site's mobile view.
@@ -26,6 +26,51 @@ type PreviewState = "loading" | "ready" | "error";
 export function LivePreview({
   url,
   title,
+  icon,
+  embeddable = true,
+}: {
+  url: string;
+  title: string;
+  icon: LucideIcon;
+  embeddable?: boolean;
+}) {
+  if (!embeddable) {
+    return <EmbedBlockedPoster url={url} icon={icon} />;
+  }
+
+  return <LiveFrame url={url} title={title} icon={icon} />;
+}
+
+/**
+ * Stand-in for sites that forbid being framed. Requesting them would only get
+ * the browser's "refused to connect" page, so nothing is loaded at all.
+ */
+function EmbedBlockedPoster({ url, icon: Icon }: { url: string; icon: LucideIcon }) {
+  const host = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-[#05101b]">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,168,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,168,255,0.05)_1px,transparent_1px)] bg-[size:36px_36px]" />
+      <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_closest-side,rgba(0,168,255,0.18),transparent)]" />
+      <div className="relative flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--color-brand-blue)]/35 bg-[var(--color-brand-blue)]/10 shadow-[0_0_30px_rgba(0,168,255,0.18)]">
+          <Icon className="h-8 w-8 text-[var(--color-brand-blue)]" />
+        </div>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-gray-300 sm:text-xs">
+          Opens in its own tab
+        </p>
+        <p className="max-w-xs font-mono text-[10px] leading-relaxed tracking-[0.14em] text-gray-400">
+          {host} does not allow embedding in other sites, so there is no live
+          preview here. Open the project to try it.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function LiveFrame({
+  url,
+  title,
   icon: Icon,
 }: {
   url: string;
@@ -36,6 +81,8 @@ export function LivePreview({
   const [state, setState] = useState<PreviewState>("loading");
   const [scale, setScale] = useState(0);
   const [shouldLoad, setShouldLoad] = useState(false);
+  // Bumped by the retry button; remounts the frame and re-runs the probe.
+  const [attempt, setAttempt] = useState(0);
 
   // Nothing is fetched until the card is actually on screen. This also keeps
   // the two responsive layouts from each loading a copy: the one hidden at the
@@ -96,7 +143,7 @@ export function LivePreview({
       window.clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [shouldLoad, url]);
+  }, [shouldLoad, url, attempt]);
 
   const host = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
@@ -122,9 +169,20 @@ export function LivePreview({
                 Preview unavailable
               </p>
               <p className="max-w-xs font-mono text-[10px] leading-relaxed tracking-[0.14em] text-gray-400">
-                {host} did not respond in time. Open the project to visit it
-                directly.
+                {host} did not respond in time. Deployments can take a moment
+                to wake up.
               </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setState("loading");
+                  setAttempt((current) => current + 1);
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-white transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+              >
+                <RotateCw className="h-3.5 w-3.5" />
+                Retry preview
+              </button>
             </>
           )}
         </div>
@@ -142,6 +200,7 @@ export function LivePreview({
       >
         {shouldLoad ? (
           <iframe
+            key={attempt}
             src={url}
             title={`Live preview of ${title}`}
             tabIndex={-1}

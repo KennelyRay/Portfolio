@@ -1,71 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { BriefcaseBusiness, Home, Layers3, Mail, UserRound } from "lucide-react";
-
-const navItems = [
-  { label: "Home", href: "#home", id: "home", Icon: Home },
-  { label: "Works", href: "#works", id: "works", Icon: BriefcaseBusiness },
-  { label: "Stack", href: "#stack", id: "stack", Icon: Layers3 },
-  { label: "About", href: "#about", id: "about", Icon: UserRound },
-  { label: "Contact", href: "#contact", id: "contact", Icon: Mail },
-];
+import { sections } from "@/lib/site";
+import { scrollToSection, useActiveSection } from "@/lib/active-section";
 
 export function MobileNavigator() {
-  const [activeSection, setActiveSection] = useState("home");
+  const activeSection = useActiveSection();
   const itemRefs = useRef<Array<HTMLAnchorElement | null>>([]);
-
-  useEffect(() => {
-    const getSectionMetrics = () =>
-      navItems
-        .map((item) => {
-          const element = document.getElementById(item.id);
-
-          if (!element) {
-            return null;
-          }
-
-          const top = element.offsetTop;
-          const height = element.offsetHeight;
-
-          return {
-            id: item.id,
-            top,
-            bottom: top + height,
-          };
-        })
-        .filter(
-          (entry): entry is { id: string; top: number; bottom: number } =>
-            entry !== null,
-        );
-
-    const updateActiveSection = () => {
-      const sections = getSectionMetrics();
-      const probeLine = window.scrollY + 140;
-
-      const current =
-        sections.find(
-          (section) => probeLine >= section.top && probeLine < section.bottom,
-        ) ?? sections.at(-1);
-
-      if (current) {
-        setActiveSection(current.id);
-      }
-    };
-
-    updateActiveSection();
-    window.addEventListener("scroll", updateActiveSection, { passive: true });
-
-    return () => window.removeEventListener("scroll", updateActiveSection);
-  }, []);
 
   useEffect(() => {
     if (window.innerWidth >= 640) {
       return;
     }
 
-    const activeIndex = navItems.findIndex((item) => item.id === activeSection);
+    const activeIndex = sections.findIndex((item) => item.id === activeSection);
     const activeItem = itemRefs.current[activeIndex];
 
     if (!activeItem) {
@@ -84,25 +33,12 @@ export function MobileNavigator() {
     id: string,
   ) => {
     event.preventDefault();
-
-    const element = document.getElementById(id);
-
-    if (!element) {
-      return;
-    }
-
-    const topOffset = id === "home" ? 0 : 88;
-    const targetTop = Math.max(element.offsetTop - topOffset, 0);
-
-    setActiveSection(id);
-    window.scrollTo({
-      top: targetTop,
-      behavior: "smooth",
-    });
+    scrollToSection(id);
   };
 
   return (
-    <motion.div
+    <motion.nav
+      aria-label="Sections"
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
@@ -111,7 +47,7 @@ export function MobileNavigator() {
       <div className="w-full rounded-[1.8rem] border border-white/10 bg-[#05070a]/88 px-2 py-2 shadow-[0_0_40px_rgba(0,168,255,0.08)] backdrop-blur-xl">
         <div className="overflow-x-auto overscroll-x-contain sm:overflow-visible">
           <div className="flex snap-x snap-mandatory gap-2 sm:grid sm:grid-cols-5 sm:gap-1">
-            {navItems.map((item, index) => {
+            {sections.map((item, index) => {
             const isActive = item.id === activeSection;
             const Icon = item.Icon;
 
@@ -121,8 +57,9 @@ export function MobileNavigator() {
                 ref={(element) => {
                   itemRefs.current[index] = element;
                 }}
-                href={item.href}
+                href={`#${item.id}`}
                 onClick={(event) => handleNavigate(event, item.id)}
+                aria-current={isActive ? "true" : undefined}
                 className={`flex min-h-[60px] min-w-[76px] shrink-0 snap-center flex-col items-center justify-center rounded-[1.2rem] px-3 py-2 text-center transition-colors duration-300 sm:min-w-0 ${
                   isActive
                     ? "bg-[var(--color-brand-blue)]/12 text-white shadow-[0_0_18px_rgba(0,168,255,0.14)]"
@@ -144,6 +81,6 @@ export function MobileNavigator() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </motion.nav>
   );
 }

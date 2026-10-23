@@ -10,12 +10,15 @@ interface SectionProps {
   id?: string;
 }
 
+// Opacity and translate only. The reveal used to animate filter: blur() and
+// scale on the whole section, which forced every frame to re-rasterise a
+// viewport-sized layer (live iframes included) and was the main scroll hitch.
 export function Section({ children, className, id }: SectionProps) {
   return (
     <motion.section
       id={id}
-      initial={{ opacity: 0, y: 44, scale: 0.992, filter: "blur(8px)" }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-8% 0px -16% 0px" }}
       transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
@@ -23,15 +26,7 @@ export function Section({ children, className, id }: SectionProps) {
         className,
       )}
     >
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-8% 0px -16% 0px" }}
-        transition={{ duration: 0.9, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-        className="mx-auto w-full max-w-[1440px]"
-      >
-        {children}
-      </motion.div>
+      <div className="mx-auto w-full max-w-[1440px]">{children}</div>
     </motion.section>
   );
 }

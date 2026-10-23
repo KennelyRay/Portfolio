@@ -1,8 +1,8 @@
 "use client";
 
 import { Section } from "./Section";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import {
   SiJavascript,
   SiHtml5,
@@ -101,12 +101,25 @@ const techStack = [
   },
 ];
 
+export const techCount = techStack.length;
+
 export function TechStack() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [hovered, setHovered] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(carouselRef, { amount: 0.3 });
   const activeTech = techStack[activeIndex];
   const ActiveTechIcon = activeTech.Icon;
 
+  // Rotate only while someone can see it, and hold still while they are
+  // reading a card under the cursor.
+  const paused = hovered || !inView;
+
   useEffect(() => {
+    if (paused) {
+      return;
+    }
+
     const interval = window.setInterval(() => {
       setActiveIndex((current) =>
         current === techStack.length - 1 ? 0 : current + 1,
@@ -114,7 +127,7 @@ export function TechStack() {
     }, 2500);
 
     return () => window.clearInterval(interval);
-  }, []);
+  }, [paused]);
 
   const goToPrevious = () => {
     setActiveIndex((current) =>
@@ -142,7 +155,12 @@ export function TechStack() {
           </p>
         </div>
 
-        <div className="px-0 sm:px-2">
+        <div
+          ref={carouselRef}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className="px-0 sm:px-2"
+        >
           <div className="flex items-center justify-between gap-4">
             <button
               type="button"
@@ -200,9 +218,10 @@ export function TechStack() {
                   key={tech.name}
                   type="button"
                   onClick={() => setActiveIndex(idx)}
+                  aria-pressed={isActive}
                   whileHover={{ y: -3 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`inline-flex min-h-12 shrink-0 items-center gap-3 rounded-full border px-5 py-3 text-sm font-medium transition-all duration-300 sm:min-h-14 sm:px-6 sm:text-base ${
+                  className={`inline-flex min-h-12 shrink-0 items-center gap-3 rounded-full border px-5 py-3 text-sm font-medium transition-[border-color,background-color,color] duration-300 sm:min-h-14 sm:px-6 sm:text-base ${
                     isActive
                       ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-white"
                       : "border-white/10 bg-white/[0.03] text-gray-400 hover:border-white/20 hover:text-white"

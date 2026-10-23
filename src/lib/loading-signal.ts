@@ -1,6 +1,10 @@
 // The boot screen covers the page for a couple of seconds. Without this handoff
 // the hero's entrance animation plays behind it and nobody ever sees it.
 let loaded = false;
+
+// Set once the boot screen has played. The root layout's head script reads it
+// before first paint so a reload in the same session skips straight to the hero.
+export const BOOT_SESSION_KEY = "kr-booted";
 const listeners = new Set<() => void>();
 
 export function markLoaded() {

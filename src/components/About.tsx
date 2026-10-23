@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Section } from "./Section";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import Image from "next/image";
 import { BriefcaseBusiness, GraduationCap, Lock, LockOpen } from "lucide-react";
 
@@ -37,7 +37,15 @@ export function About() {
     return () => window.clearTimeout(timeoutId);
   }, [unlockStage]);    
 
+  // Cycling a blurred, filtered photo repaints it, so only do it on screen.
+  const portraitRef = useRef<HTMLDivElement>(null);
+  const portraitInView = useInView(portraitRef, { amount: 0.2 });
+
   useEffect(() => {
+    if (!portraitInView) {
+      return;
+    }
+
     const intervalId = window.setInterval(() => {
       setActiveProfileImage((current) =>
         current === profileImages.length - 1 ? 0 : current + 1,
@@ -45,7 +53,7 @@ export function About() {
     }, 5000);
 
     return () => window.clearInterval(intervalId);
-  }, [profileImages.length]);
+  }, [profileImages.length, portraitInView]);
 
   const isUnlocked = unlockStage === "unlocked";
 
@@ -117,7 +125,10 @@ export function About() {
           </div>
         </div>
 
-        <div className="relative mx-auto aspect-[4/4.7] w-full max-w-[500px]">
+        <div
+          ref={portraitRef}
+          className="relative mx-auto aspect-[4/4.7] w-full max-w-[500px]"
+        >
           <div className="absolute -left-5 top-12 h-28 w-28 rounded-full bg-[var(--color-brand-blue)]/15 blur-3xl" />
           <div className="absolute -right-3 bottom-8 h-36 w-36 rounded-full bg-[var(--color-brand-blue)]/10 blur-3xl" />
 
@@ -139,7 +150,8 @@ export function About() {
                   src={profileImages[activeProfileImage]}
                   alt="Portrait of Kennely Ray"
                   fill
-                  className={`object-cover object-center transition-all duration-700 ${
+                  sizes="(min-width: 1024px) 500px, 92vw"
+                  className={`object-cover object-center transition-[filter,transform] duration-700 ${
                     isUnlocked
                       ? "scale-100 blur-0 grayscale-0"
                       : "scale-[1.08] blur-lg grayscale brightness-[0.38]"

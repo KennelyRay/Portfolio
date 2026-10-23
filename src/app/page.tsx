@@ -10,6 +10,7 @@ import { ScrollCue } from "@/components/ScrollCue";
 import { MobileNavigator } from "@/components/MobileNavigator";
 import { InitialScrollReset } from "@/components/InitialScrollReset";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { CommandPalette } from "@/components/CommandPalette";
 
 export default function Home() {
   return (
@@ -20,7 +21,8 @@ export default function Home() {
       <Navbar />
       <MobileNavigator />
       <ScrollCue />
-      
+      <CommandPalette />
+
       <Hero />
 
       <Works />

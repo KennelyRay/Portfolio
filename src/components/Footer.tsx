@@ -3,21 +3,22 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUp, Check, Copy, Heart } from "lucide-react";
+import { EMAIL as email } from "@/lib/site";
 
 const quickLinks = [
   { label: "Home", href: "#home" },
   { label: "Works", href: "#works" },
+  { label: "Stack", href: "#stack" },
   { label: "About", href: "#about" },
   { label: "Contact", href: "#contact" },
 ];
-
-const email = "krbucang@gmail.com";
 
 export function Footer() {
   const [copied, setCopied] = useState(false);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   };
 
   const handleCopyEmail = async () => {
@@ -84,7 +85,7 @@ export function Footer() {
               onClick={scrollToTop}
               whileHover={{ y: -2, backgroundColor: "var(--color-brand-blue)", color: "#050505" }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-800 bg-[#111] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-300 transition-colors duration-300"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-800 bg-[#111] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-300"
               aria-label="Scroll to top"
             >
               <ArrowUp className="h-3.5 w-3.5" />

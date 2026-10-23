@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { markLoaded } from "@/lib/loading-signal";
+import { BOOT_SESSION_KEY, markLoaded } from "@/lib/loading-signal";
 
 const bootMessages = [
   "INITIALIZING PORTFOLIO...",
@@ -17,6 +17,7 @@ const loadingTips = [
   "TIP: USE THE PROJECT BROWSER TO EXPLORE PREVIOUS WORKS.",
   "TIP: EVERY PROJECT CARD OPENS A LIVE DEPLOYMENT.",
   "TIP: THE CONTACT SECTION IS ALWAYS UNLOCKED.",
+  "TIP: PRESS CTRL+K OR / TO JUMP ANYWHERE.",
 ];
 
 // The tip is picked per page load, which makes it client-only data. Choosing it
@@ -55,6 +56,35 @@ export function LoadingScreen() {
     let currentProgress = 0;
     let timeoutId: number;
 
+    const finish = () => {
+      window.clearTimeout(timeoutId);
+      window.removeEventListener("keydown", skip);
+      window.removeEventListener("pointerdown", skip);
+      setIsDone(true);
+      // Release the hero reveal as the boot screen starts wiping away.
+      markLoaded();
+      try {
+        window.sessionStorage.setItem(BOOT_SESSION_KEY, "1");
+      } catch {
+        // Storage can be blocked; the boot screen just plays again next time.
+      }
+    };
+
+    const skip = () => {
+      setProgress(100);
+      finish();
+    };
+
+    // Seen it already this session (the head script flagged it and CSS has
+    // hidden the overlay): hand straight over to the hero.
+    if (document.documentElement.hasAttribute("data-booted")) {
+      finish();
+      return;
+    }
+
+    window.addEventListener("keydown", skip);
+    window.addEventListener("pointerdown", skip);
+
     const advance = () => {
       // Uneven, stuttering increments so the bar fills like a real game loader.
       const increment =
@@ -67,16 +97,16 @@ export function LoadingScreen() {
       if (currentProgress < 100) {
         timeoutId = window.setTimeout(advance, Math.random() * 220 + 120);
       } else {
-        timeoutId = window.setTimeout(() => {
-          setIsDone(true);
-          // Release the hero reveal as the boot screen starts wiping away.
-          markLoaded();
-        }, 650);
+        timeoutId = window.setTimeout(finish, 650);
       }
     };
 
     timeoutId = window.setTimeout(advance, 300);
-    return () => window.clearTimeout(timeoutId);
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.removeEventListener("keydown", skip);
+      window.removeEventListener("pointerdown", skip);
+    };
   }, []);
 
   useEffect(() => {
@@ -96,6 +126,7 @@ export function LoadingScreen() {
         <motion.div
           exit={{ opacity: 0, y: "-4%" }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
+          data-boot-screen=""
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--color-brand-black)] px-6"
           aria-label="Loading portfolio"
           role="status"
@@ -165,7 +196,16 @@ export function LoadingScreen() {
             transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
             className="absolute bottom-14 font-mono text-[10px] font-bold uppercase tracking-[0.35em] text-gray-600 sm:bottom-20 sm:text-xs"
           >
-            {isComplete ? "ENTERING PORTFOLIO" : "LOADING"}
+            {isComplete ? (
+              "ENTERING PORTFOLIO"
+            ) : (
+              <>
+                LOADING
+                <span className="text-gray-700"> / </span>
+                <span className="hidden sm:inline">PRESS ANY KEY TO SKIP</span>
+                <span className="sm:hidden">TAP TO SKIP</span>
+              </>
+            )}
           </motion.p>
         </motion.div>
       )}

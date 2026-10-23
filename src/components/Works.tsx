@@ -1,124 +1,22 @@
 "use client";
 
 import { Section } from "./Section";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import { LivePreview } from "./LivePreview";
 import {
   ArrowUpRight,
-  Bug,
-  Bus,
-  CalendarDays,
-  Car,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
   Folder,
   FolderOpen,
-  Library,
-  MessageSquareText,
-  MonitorSmartphone,
-  Plane,
-  ShoppingCart,
-  Store,
-  WalletCards,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { allProjects, featuredProjects, hostOf } from "@/lib/projects";
+import { isTypingTarget, SELECT_PROJECT_EVENT } from "@/lib/ui-events";
 
-const allProjects = [
-  {
-    title: "Vertixia Rental",
-    desc: "A car rental platform that lets customers preview rental cars through interactive 3D models before booking.",
-    role: "Developer",
-    link: "https://vertixia-rental.vercel.app/",
-    icon: Car,
-  },
-  {
-    title: "Human Resources Information System",
-    desc: "An attendance management web app with reporting, employee management, terminal tools, and settings.",
-    role: "Developer/DB Engineer",
-    link: "https://j-attendance-tracker.vercel.app/",
-    icon: MonitorSmartphone,
-  },
-  {
-    title: "MasterCraft Bug Hunter",
-    desc: "A bug reporting platform built for clean issue tracking, organized triage, and reward-based bug submissions.",
-    role: "Developer/DB Engineer",
-    link: "https://mcbughunter.vercel.app/",
-    icon: Bug,
-  },
-  {
-    title: "VertixHub",
-    desc: "A premium computer hardware e-commerce platform built for browsing products, custom PC building, and a modern shopping experience.",
-    role: "Developer",
-    link: "https://vertixhub.vercel.app/home",
-    icon: ShoppingCart,
-  },
-  {
-    title: "VertixFlights",
-    desc: "A flight booking platform built for searching flights, booking airline tickets, and a smooth travel reservation experience.",
-    role: "Developer/DB Engineer",
-    link: "https://vertix-flights.vercel.app",
-    icon: Plane,
-  },
-  {
-    title: "AniVertix",
-    desc: "An anime and manga database platform built for browsing titles, exploring details, and discovering new series.",
-    role: "Developer/DB Engineer",
-    link: "https://anivertix.vercel.app/",
-    icon: Library,
-  },
-  {
-    title: "DENR Cashflow System",
-    desc: "A secure cashflow tracking and reporting system designed for streamlined financial monitoring.",
-    role: "Developer/DB Engineer",
-    link: "https://denr-cashflow-system.vercel.app/login",
-    icon: WalletCards,
-  },
-  {
-    title: "DENR Reservation System",
-    desc: "A dedicated reservation management system built for DENR Baguio.",
-    role: "Developer/DB Engineer",
-    link: "https://denr-car-reservation.vercel.app/",
-    icon: CalendarDays,
-  },
-  {
-    title: "Ken-dal Store POS",
-    desc: "A point of sale system built for store management, inventory control, sales tracking, and secure access.",
-    role: "Developer",
-    link: "https://kendal-store.vercel.app/#/login",
-    icon: Store,
-  },
-  {
-    title: "AgLugan",
-    desc: "A jeepney seat reservation platform with live queues, guaranteed seats, and cashless payments for commuters on the Bakakeng route.",
-    role: "Lead Developer",
-    link: "https://aglugan.vercel.app/",
-    icon: Bus,
-  },
-  {
-    title: "Navibot",
-    desc: "An academic capstone enrollment chatbot built to guide students through enrollment questions and portal-related assistance.",
-    role: "Academic Capstone",
-    link: "https://tektitans-navibot.vercel.app/",
-    icon: MessageSquareText,
-  },
-];
-
-// Single source of truth for the count the hero advertises.
-export const projectCount = allProjects.length;
-
-const featuredTitles = [
-  "Vertixia Rental",
-  "Human Resources Information System",
-  "VertixFlights",
-  "Navibot",
-  "DENR Reservation System",
-];
-
-const featuredProjects = featuredTitles.flatMap((title) =>
-  allProjects.filter((project) => project.title === title),
-);
+const AUTO_ADVANCE_MS = 15000;
 
 const worksTabs = [
   { id: "featured", label: "Featured Works" },
@@ -178,13 +76,39 @@ function FolderBack({ className = "" }: { className?: string }) {
   );
 }
 
+/**
+ * Fills over the auto-advance interval so the browser moving on by itself
+ * never comes as a surprise. Keyed by cycle so it restarts with the timer, and
+ * empty while paused.
+ */
+function AutoAdvanceBar({ cycle, paused }: { cycle: number; paused: boolean }) {
+  return (
+    <div aria-hidden="true" className="absolute inset-x-0 -bottom-px h-px overflow-hidden">
+      {paused ? null : (
+        <div
+          key={cycle}
+          className="h-full origin-left bg-[var(--color-brand-blue)]/80"
+          style={{ animation: `progress-fill ${AUTO_ADVANCE_MS}ms linear forwards` }}
+        />
+      )}
+    </div>
+  );
+}
+
 export function Works() {
   const [activeTab, setActiveTab] = useState<WorksTab>("featured");
   const [activeIndex, setActiveIndex] = useState(0);
   const [railStartIndex, setRailStartIndex] = useState(0);
   const [autoAdvanceCycle, setAutoAdvanceCycle] = useState(0);
+  const [hovered, setHovered] = useState(false);
   const mobileProjectButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const mobileProjectRailRef = useRef<HTMLDivElement | null>(null);
+  const browserRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(browserRef, { amount: 0.25 });
+
+  // Auto-advance swaps the live preview, which loads a whole site. Don't do
+  // that while nobody is looking, or while someone is reading a card.
+  const paused = hovered || !inView;
 
   const projects = activeTab === "featured" ? featuredProjects : allProjects;
   const activeProject = projects[activeIndex];
@@ -296,17 +220,66 @@ export function Works() {
   };
 
   useEffect(() => {
-    if (projects.length <= 1) {
+    if (projects.length <= 1 || paused) {
       return;
     }
 
     const timeoutId = window.setTimeout(() => {
       scrollRail(1);
       setAutoAdvanceCycle((current) => current + 1);
-    }, 15000);
+    }, AUTO_ADVANCE_MS);
 
     return () => window.clearTimeout(timeoutId);
-  }, [autoAdvanceCycle, projects.length]);
+  }, [autoAdvanceCycle, projects.length, paused]);
+
+  // Left/right arrows flip through projects while the browser is on screen.
+  useEffect(() => {
+    if (!inView) {
+      return;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        isTypingTarget(event.target)
+      ) {
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goToNext();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goToPrevious();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
+
+  // The command palette can ask for any project by title.
+  useEffect(() => {
+    const onSelect = (event: Event) => {
+      const title = (event as CustomEvent<string>).detail;
+      const index = allProjects.findIndex((project) => project.title === title);
+      if (index === -1) {
+        return;
+      }
+
+      resetAutoAdvanceTimer();
+      setActiveTab("all");
+      setActiveIndex(index);
+      setRailStartIndex(index);
+    };
+
+    window.addEventListener(SELECT_PROJECT_EVENT, onSelect);
+    return () => window.removeEventListener(SELECT_PROJECT_EVENT, onSelect);
+  }, []);
 
   useEffect(() => {
     if (window.innerWidth >= 1280) {
@@ -333,7 +306,7 @@ export function Works() {
 
   return (
     <Section id="works" className="bg-transparent">
-      <div className="space-y-10 sm:space-y-12 xl:space-y-16">
+      <div ref={browserRef} className="space-y-10 sm:space-y-12 xl:space-y-16">
         <h2 className="text-center text-4xl font-bold tracking-tight uppercase sm:text-6xl">
           MY <span className="text-[var(--color-brand-blue)]">WORKS</span>
         </h2>
@@ -378,6 +351,11 @@ export function Works() {
           </div>
 
           <div className="hidden items-center justify-between gap-4 sm:justify-end xl:flex">
+            <p className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">
+              <kbd className="rounded-md border border-white/15 bg-white/[0.04] px-1.5 py-0.5 text-gray-300">←</kbd>
+              <kbd className="rounded-md border border-white/15 bg-white/[0.04] px-1.5 py-0.5 text-gray-300">→</kbd>
+              to browse
+            </p>
             <div className="text-sm font-bold tracking-[0.3em] text-gray-500">
               {String(activeIndex + 1).padStart(2, "0")} / {totalProjects}
             </div>
@@ -452,15 +430,16 @@ export function Works() {
                   transition={{ duration: 0.35, ease: "easeOut" }}
                   className="relative z-10 overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#06111d]"
                 >
-                  <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                  <div className="relative flex items-center justify-between border-b border-white/10 px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span className="h-3 w-3 rounded-full bg-red-400/80" />
                       <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
                       <span className="h-3 w-3 rounded-full bg-green-400/80" />
                     </div>
                     <p className="max-w-[58%] truncate text-[10px] font-medium uppercase tracking-[0.18em] text-gray-500 sm:text-xs">
-                      {activeProject.link.replace(/^https?:\/\//, "")}
+                      {hostOf(activeProject.link)}
                     </p>
+                    <AutoAdvanceBar cycle={autoAdvanceCycle} paused={paused} />
                   </div>
 
                   <div className="relative h-[240px] overflow-hidden bg-[#05101b] sm:h-[320px]">
@@ -469,6 +448,7 @@ export function Works() {
                       url={activeProject.link}
                       title={activeProject.title}
                       icon={ActiveProjectIcon}
+                      embeddable={activeProject.embeddable}
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#06111d] to-transparent" />
                   </div>
@@ -540,7 +520,7 @@ export function Works() {
                       }}
                       onClick={() => selectProject(idx)}
                       whileTap={{ scale: 0.98 }}
-                      className={`relative min-h-[164px] w-[220px] shrink-0 snap-center overflow-hidden rounded-[1.4rem] border px-4 pb-4 pt-5 text-left transition-all duration-300 sm:w-[250px] ${
+                      className={`relative min-h-[164px] w-[220px] shrink-0 snap-center overflow-hidden rounded-[1.4rem] border px-4 pb-4 pt-5 text-left transition-[border-color,background-color,box-shadow] duration-300 sm:w-[250px] ${
                         isActive
                           ? "border-[var(--color-brand-blue)] bg-[linear-gradient(180deg,rgba(0,168,255,0.16),rgba(7,23,38,0.92))] shadow-[0_0_24px_rgba(0,168,255,0.12)]"
                           : "border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(6,14,22,0.92))] hover:border-white/20"
@@ -584,7 +564,11 @@ export function Works() {
           </div>
         </div>
 
-        <div className="hidden items-stretch gap-6 xl:grid xl:grid-cols-[300px_minmax(0,1fr)]">
+        <div
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className="hidden items-stretch gap-6 xl:grid xl:grid-cols-[300px_minmax(0,1fr)]"
+        >
           <div className="flex flex-col gap-3 lg:min-h-[620px]">
             {projects.length > visibleCount ? (
               <button
@@ -618,7 +602,7 @@ export function Works() {
                         type="button"
                         onClick={() => selectProject(idx)}
                         whileHover={{ y: -5, scale: 1.02 }}
-                        className={`relative flex min-h-[148px] w-full flex-col items-center justify-center overflow-hidden rounded-[1.65rem] border px-4 pb-5 pt-5 text-center transition-all duration-300 ${
+                        className={`relative flex min-h-[148px] w-full flex-col items-center justify-center overflow-hidden rounded-[1.65rem] border px-4 pb-5 pt-5 text-center transition-[border-color,background-color,box-shadow] duration-300 ${
                           isActive
                             ? "border-[var(--color-brand-blue)] bg-[linear-gradient(180deg,rgba(0,168,255,0.16),rgba(7,23,38,0.92))] shadow-[0_0_30px_rgba(0,168,255,0.15)]"
                             : "border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(6,14,22,0.9))] hover:border-white/20"
@@ -678,15 +662,16 @@ export function Works() {
                 transition={{ duration: 0.35, ease: "easeOut" }}
                 className="relative z-10 h-full overflow-hidden rounded-[2rem] border border-white/10 bg-[#06111d]"
               >
-                <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
+                <div className="relative flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
                   <div className="flex items-center gap-2">
                     <span className="h-3 w-3 rounded-full bg-red-400/80" />
                     <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
                     <span className="h-3 w-3 rounded-full bg-green-400/80" />
                   </div>
                   <p className="max-w-[60%] truncate text-xs font-medium tracking-[0.2em] text-gray-500 uppercase">
-                    {activeProject.link.replace(/^https?:\/\//, "")}
+                    {hostOf(activeProject.link)}
                   </p>
+                  <AutoAdvanceBar cycle={autoAdvanceCycle} paused={paused} />
                 </div>
 
                 <div className="grid xl:grid-cols-[minmax(0,1.5fr)_340px]">
@@ -696,6 +681,7 @@ export function Works() {
                       url={activeProject.link}
                       title={activeProject.title}
                       icon={ActiveProjectIcon}
+                      embeddable={activeProject.embeddable}
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#06111d] to-transparent" />
                   </div>
