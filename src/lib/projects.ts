@@ -27,6 +27,10 @@ export type Project = {
   // the browser refuses the frame, and a cross-origin page cannot detect that,
   // so the preview shows a poster instead. Omit when any site may embed it.
   embedHosts?: string[];
+  // True when the site sends Cross-Origin-Resource-Policy: same-origin. The
+  // browser then blocks the preview's reachability probe even though the site
+  // is up (the frame itself is unaffected), so the probe is skipped.
+  sameOriginResources?: boolean;
 };
 
 // Newest first: the hero's "latest build" card reads the head of this list.
@@ -39,6 +43,7 @@ export const allProjects: Project[] = [
     icon: Crosshair,
     previewUrl: "https://valovertix.vercel.app/?demo=1",
     embedHosts: ["ken-portfolio.me", "www.ken-portfolio.me"],
+    sameOriginResources: true,
   },
   {
     title: "Vertixia Rental",

@@ -28,11 +28,14 @@ export function LivePreview({
   title,
   icon,
   embedHosts,
+  probe = true,
 }: {
   url: string;
   title: string;
   icon: LucideIcon;
   embedHosts?: string[];
+  // Off for sites whose CORP header blocks the reachability probe.
+  probe?: boolean;
 }) {
   // null on the server and during hydration, so a restricted site starts on
   // the poster and only swaps to the frame once we know where we are.
@@ -46,7 +49,7 @@ export function LivePreview({
     return <EmbedBlockedPoster url={url} icon={icon} allowedHost={embedHosts[0]} />;
   }
 
-  return <LiveFrame url={url} title={title} icon={icon} />;
+  return <LiveFrame url={url} title={title} icon={icon} probe={probe} />;
 }
 
 const subscribeToNothing = () => () => {};
@@ -91,10 +94,12 @@ function LiveFrame({
   url,
   title,
   icon: Icon,
+  probe,
 }: {
   url: string;
   title: string;
   icon: LucideIcon;
+  probe: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<PreviewState>("loading");
@@ -139,7 +144,7 @@ function LiveFrame({
   }, []);
 
   useEffect(() => {
-    if (!shouldLoad) {
+    if (!shouldLoad || !probe) {
       return;
     }
 
@@ -162,7 +167,7 @@ function LiveFrame({
       window.clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [shouldLoad, url, attempt]);
+  }, [shouldLoad, url, attempt, probe]);
 
   const host = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 

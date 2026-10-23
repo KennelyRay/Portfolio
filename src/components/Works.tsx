@@ -449,6 +449,7 @@ export function Works() {
                       title={activeProject.title}
                       icon={ActiveProjectIcon}
                       embedHosts={activeProject.embedHosts}
+                      probe={!activeProject.sameOriginResources}
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#06111d] to-transparent" />
                   </div>
@@ -682,6 +683,7 @@ export function Works() {
                       title={activeProject.title}
                       icon={ActiveProjectIcon}
                       embedHosts={activeProject.embedHosts}
+                      probe={!activeProject.sameOriginResources}
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#06111d] to-transparent" />
                   </div>
