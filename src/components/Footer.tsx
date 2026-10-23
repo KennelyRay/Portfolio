@@ -50,7 +50,8 @@ export function Footer() {
               motion, and a focus on clarity.
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
+            {/* Below xl the bottom tab bar already lists every section. */}
+            <div className="hidden flex-wrap items-center justify-start gap-2 xl:flex">
               {quickLinks.map((link) => (
                 <motion.a
                   key={link.href}
@@ -65,12 +66,12 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+          <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-row lg:flex-col">
             <motion.button
               onClick={handleCopyEmail}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-800 bg-[#0b0b0b] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-300 transition-colors duration-300 hover:border-[var(--color-brand-blue)]/40 hover:text-white"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-800 bg-[#0b0b0b] h-12 px-4 text-[11px] sm:h-auto sm:py-3 font-semibold uppercase tracking-[0.22em] text-gray-300 transition-colors duration-300 hover:border-[var(--color-brand-blue)]/40 hover:text-white"
               aria-label={copied ? "Email copied" : "Copy email address"}
             >
               {copied ? (
@@ -85,7 +86,7 @@ export function Footer() {
               onClick={scrollToTop}
               whileHover={{ y: -2, backgroundColor: "var(--color-brand-blue)", color: "#050505" }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-800 bg-[#111] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-300"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-800 bg-[#111] h-12 px-4 text-[11px] sm:h-auto sm:py-3 font-semibold uppercase tracking-[0.22em] text-gray-300"
               aria-label="Scroll to top"
             >
               <ArrowUp className="h-3.5 w-3.5" />

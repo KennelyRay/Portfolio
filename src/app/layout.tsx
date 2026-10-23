@@ -37,6 +37,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#050505",
   colorScheme: "dark",
+  // Draw under the notch and home indicator; fixed bars pad themselves with
+  // env(safe-area-inset-*) so nothing sits beneath the system UI.
+  viewportFit: "cover",
 };
 
 // Runs before first paint: on a reload within the same session, flag the

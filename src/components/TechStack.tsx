@@ -103,6 +103,11 @@ const techStack = [
 
 export const techCount = techStack.length;
 
+const stackGroups = ["Frontend", "Backend", "Database"].map((category) => ({
+  category,
+  items: techStack.filter((tech) => tech.category === category),
+}));
+
 export function TechStack() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [hovered, setHovered] = useState(false);
@@ -112,7 +117,8 @@ export function TechStack() {
   const ActiveTechIcon = activeTech.Icon;
 
   // Rotate only while someone can see it, and hold still while they are
-  // reading a card under the cursor.
+  // reading a card under the cursor. The carousel is display:none on phones,
+  // so it never counts as in view there and never ticks.
   const paused = hovered || !inView;
 
   useEffect(() => {
@@ -143,23 +149,58 @@ export function TechStack() {
 
   return (
     <Section id="stack" className="bg-transparent">
-      <div className="w-full space-y-10 sm:space-y-16">
-        <div className="space-y-4 text-center">
+      <div className="w-full space-y-8 sm:space-y-16">
+        <div className="space-y-4 sm:text-center">
           <h2 className="text-4xl font-bold tracking-tight uppercase sm:text-6xl">
             TECH <span className="text-[var(--color-brand-blue)]">STACK</span>
           </h2>
-          <p className="mx-auto max-w-3xl text-sm leading-relaxed text-gray-400 sm:text-base">
+          <p className="max-w-3xl text-sm leading-relaxed text-gray-400 sm:mx-auto sm:text-base">
             A focused toolkit across interface engineering, backend logic, and
-            database systems. Browse the stack through a clean interactive
-            carousel.
+            database systems.
+            <span className="hidden md:inline">
+              {" "}
+              Browse the stack through a clean interactive carousel.
+            </span>
           </p>
+        </div>
+
+        {/* Phones: the whole stack at a glance, grouped, instead of a
+            one-at-a-time carousel you have to tap through. */}
+        <div className="space-y-6 md:hidden">
+          {stackGroups.map(({ category, items }) => (
+            <section key={category} aria-label={category}>
+              <p className="mb-3 flex items-center justify-between font-mono text-[11px] font-bold uppercase tracking-[0.26em] text-[var(--color-brand-blue)]">
+                {category}
+                <span className="text-gray-500">
+                  {String(items.length).padStart(2, "0")}
+                </span>
+              </p>
+              <ul className="grid grid-cols-2 gap-2.5">
+                {items.map((tech) => {
+                  const TechIcon = tech.Icon;
+
+                  return (
+                    <li
+                      key={tech.name}
+                      className="flex min-h-14 items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-3.5 py-3"
+                    >
+                      <TechIcon className="h-5 w-5 shrink-0 text-[var(--color-brand-blue)]" />
+                      <span className="text-sm font-semibold leading-tight text-white">
+                        {tech.name}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
         </div>
 
         <div
           ref={carouselRef}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
-          className="px-0 sm:px-2"
+          className="hidden px-2 md:block"
         >
           <div className="flex items-center justify-between gap-4">
             <button

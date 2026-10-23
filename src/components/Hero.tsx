@@ -249,7 +249,7 @@ function LatestBuildCard({ revealed }: { revealed: boolean }) {
             href={latest.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.2em] text-white transition-colors hover:text-[var(--color-brand-blue)]"
+            className="-my-3 -mr-2 inline-flex items-center gap-1.5 px-2 py-3 text-xs font-bold uppercase tracking-[0.2em] text-white transition-colors hover:text-[var(--color-brand-blue)]"
           >
             Open live
             <ArrowUpRight className="h-3.5 w-3.5" />

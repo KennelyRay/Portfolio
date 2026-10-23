@@ -12,6 +12,20 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 6rem;
+    /* Keep iOS from inflating text after rotating to landscape. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* The default grey tap flash looks like a web page, not an app; touch
+       feedback comes from each control's own active state instead. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* No double-tap-to-zoom wait on controls, so taps register immediately. */
+  a,
+  button,
+  [role="tab"],
+  [role="option"] {
+    touch-action: manipulation;
   }
 
   body {

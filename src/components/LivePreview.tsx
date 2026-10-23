@@ -3,10 +3,16 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { RotateCw, type LucideIcon } from "lucide-react";
 
-// The framed sites are rendered at a desktop viewport and scaled down, so the
-// preview shows the real desktop layout rather than each site's mobile view.
-const FRAME_WIDTH = 1280;
-const FRAME_HEIGHT = 800;
+// The framed site is rendered at a fixed viewport and scaled to fit the card.
+// "desktop" shows each site's full layout on large screens; on a phone that
+// shrinks to an unreadable thumbnail, so phones render the site's own mobile
+// layout instead, at close to 1:1.
+const VIEWPORTS = {
+  desktop: { width: 1280, height: 800 },
+  mobile: { width: 390, height: 844 },
+} as const;
+
+type Viewport = keyof typeof VIEWPORTS;
 
 // Deployments cold-start; past this we stop waiting and say so.
 const LOAD_TIMEOUT_MS = 15000;
@@ -29,6 +35,7 @@ export function LivePreview({
   icon,
   embedHosts,
   probe = true,
+  viewport = "desktop",
 }: {
   url: string;
   title: string;
@@ -36,6 +43,7 @@ export function LivePreview({
   embedHosts?: string[];
   // Off for sites whose CORP header blocks the reachability probe.
   probe?: boolean;
+  viewport?: Viewport;
 }) {
   // null on the server and during hydration, so a restricted site starts on
   // the poster and only swaps to the frame once we know where we are.
@@ -49,7 +57,9 @@ export function LivePreview({
     return <EmbedBlockedPoster url={url} icon={icon} allowedHost={embedHosts[0]} />;
   }
 
-  return <LiveFrame url={url} title={title} icon={icon} probe={probe} />;
+  return (
+    <LiveFrame url={url} title={title} icon={icon} probe={probe} viewport={viewport} />
+  );
 }
 
 const subscribeToNothing = () => () => {};
@@ -95,12 +105,15 @@ function LiveFrame({
   title,
   icon: Icon,
   probe,
+  viewport,
 }: {
   url: string;
   title: string;
   icon: LucideIcon;
   probe: boolean;
+  viewport: Viewport;
 }) {
+  const frame = VIEWPORTS[viewport];
   const containerRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<PreviewState>("loading");
   const [scale, setScale] = useState(0);
@@ -136,12 +149,12 @@ function LiveFrame({
 
     const observer = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 0;
-      setScale(width / FRAME_WIDTH);
+      setScale(width / frame.width);
     });
 
     observer.observe(element);
     return () => observer.disconnect();
-  }, []);
+  }, [frame.width]);
 
   useEffect(() => {
     if (!shouldLoad || !probe) {
@@ -216,8 +229,8 @@ function LiveFrame({
         aria-hidden="true"
         className="pointer-events-none absolute left-0 top-0 origin-top-left transition-opacity duration-700"
         style={{
-          width: FRAME_WIDTH,
-          height: FRAME_HEIGHT,
+          width: frame.width,
+          height: frame.height,
           transform: `scale(${scale})`,
           opacity: state === "ready" && scale > 0 ? 1 : 0,
         }}

@@ -14,7 +14,7 @@ import { CommandPalette } from "@/components/CommandPalette";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-transparent pb-24 xl:pb-0">
+    <main className="relative min-h-screen bg-transparent pb-[calc(6rem+env(safe-area-inset-bottom))] xl:pb-0">
       <LoadingScreen />
       <InitialScrollReset />
       <BackgroundAnimation />

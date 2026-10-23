@@ -3,6 +3,7 @@
 import { Section } from "./Section";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import { LivePreview } from "./LivePreview";
+import { MobileWorks } from "./MobileWorks";
 import {
   ArrowUpRight,
   ChevronDown,
@@ -101,13 +102,13 @@ export function Works() {
   const [railStartIndex, setRailStartIndex] = useState(0);
   const [autoAdvanceCycle, setAutoAdvanceCycle] = useState(0);
   const [hovered, setHovered] = useState(false);
-  const mobileProjectButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const mobileProjectRailRef = useRef<HTMLDivElement | null>(null);
   const browserRef = useRef<HTMLDivElement>(null);
   const inView = useInView(browserRef, { amount: 0.25 });
 
   // Auto-advance swaps the live preview, which loads a whole site. Don't do
-  // that while nobody is looking, or while someone is reading a card.
+  // that while nobody is looking, or while someone is reading a card. The ref
+  // sits on the desktop browser, which is display:none below xl, so phones
+  // (where the deck is swiped by hand) never auto-advance.
   const paused = hovered || !inView;
 
   const projects = activeTab === "featured" ? featuredProjects : allProjects;
@@ -281,41 +282,18 @@ export function Works() {
     return () => window.removeEventListener(SELECT_PROJECT_EVENT, onSelect);
   }, []);
 
-  useEffect(() => {
-    if (window.innerWidth >= 1280) {
-      return;
-    }
-
-    const activeButton = mobileProjectButtonRefs.current[activeIndex];
-    const rail = mobileProjectRailRef.current;
-
-    if (!activeButton || !rail) {
-      return;
-    }
-
-    const targetLeft =
-      activeButton.offsetLeft - rail.clientWidth / 2 + activeButton.clientWidth / 2;
-    const maxScrollLeft = rail.scrollWidth - rail.clientWidth;
-    const nextScrollLeft = Math.min(Math.max(targetLeft, 0), maxScrollLeft);
-
-    rail.scrollTo({
-      left: nextScrollLeft,
-      behavior: "smooth",
-    });
-  }, [activeIndex]);
-
   return (
     <Section id="works" className="bg-transparent">
-      <div ref={browserRef} className="space-y-10 sm:space-y-12 xl:space-y-16">
-        <h2 className="text-center text-4xl font-bold tracking-tight uppercase sm:text-6xl">
+      <div className="space-y-6 sm:space-y-12 xl:space-y-16">
+        <h2 className="text-4xl font-bold tracking-tight uppercase sm:text-center sm:text-6xl">
           MY <span className="text-[var(--color-brand-blue)]">WORKS</span>
         </h2>
 
-        <div className="flex justify-center">
+        <div className="flex sm:justify-center">
           <div
             role="tablist"
             aria-label="Project categories"
-            className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1.5"
+            className="grid w-full grid-cols-2 items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1.5 sm:inline-flex sm:w-auto"
           >
             {worksTabs.map((tab) => {
               const isActiveTab = tab.id === activeTab;
@@ -327,7 +305,7 @@ export function Works() {
                   role="tab"
                   aria-selected={isActiveTab}
                   onClick={() => selectTab(tab.id)}
-                  className={`rounded-full px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors sm:px-6 sm:text-xs ${
+                  className={`h-11 rounded-full px-4 text-[11px] font-bold uppercase tracking-[0.18em] transition-colors sm:h-auto sm:px-6 sm:py-2.5 sm:text-xs sm:tracking-[0.2em] ${
                     isActiveTab
                       ? "bg-[var(--color-brand-blue)] text-black"
                       : "text-gray-400 hover:text-white"
@@ -347,6 +325,7 @@ export function Works() {
             </p>
             <p className="max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
               Browse through the projects I have worked on before! Get a feel of what I can do through these previous works.
+              <span className="xl:hidden"> Swipe through the cards to explore.</span>
             </p>
           </div>
 
@@ -381,191 +360,16 @@ export function Works() {
         </div>
 
         <div className="xl:hidden">
-          <div className="space-y-5">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">
-                  Active Project
-                </p>
-                <p className="mt-2 text-sm font-bold tracking-[0.26em] text-[var(--color-brand-blue)]">
-                  {String(activeIndex + 1).padStart(2, "0")} / {totalProjects}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={goToPrevious}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
-                  aria-label="Previous project"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={goToNext}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
-                  aria-label="Next project"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            <div className="relative pt-[64px]">
-              <FolderBack className="absolute inset-x-0 top-[46px] h-[60px]" />
-              <FolderTab className="absolute left-0 top-0 z-20">
-                <FolderOpen className="h-[18px] w-[18px] text-white" />
-                <span className="text-xs font-bold uppercase tracking-[0.28em] text-white">
-                  {String(activeIndex + 1).padStart(2, "0")} / {totalProjects}
-                </span>
-              </FolderTab>
-
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`${activeProject.title}-mobile`}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -24 }}
-                  transition={{ duration: 0.35, ease: "easeOut" }}
-                  className="relative z-10 overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#06111d]"
-                >
-                  <div className="relative flex items-center justify-between border-b border-white/10 px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-red-400/80" />
-                      <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
-                      <span className="h-3 w-3 rounded-full bg-green-400/80" />
-                    </div>
-                    <p className="max-w-[58%] truncate text-[10px] font-medium uppercase tracking-[0.18em] text-gray-500 sm:text-xs">
-                      {hostOf(activeProject.link)}
-                    </p>
-                    <AutoAdvanceBar cycle={autoAdvanceCycle} paused={paused} />
-                  </div>
-
-                  <div className="relative h-[240px] overflow-hidden bg-[#05101b] sm:h-[320px]">
-                    <LivePreview
-                      key={activeProject.link}
-                      url={activeProject.previewUrl ?? activeProject.link}
-                      title={activeProject.title}
-                      icon={ActiveProjectIcon}
-                      embedHosts={activeProject.embedHosts}
-                      probe={!activeProject.sameOriginResources}
-                    />
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#06111d] to-transparent" />
-                  </div>
-
-                  <div className="space-y-5 p-4 sm:p-6">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span className="rounded-full border border-[var(--color-brand-blue)]/40 bg-[var(--color-brand-blue)]/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--color-brand-blue)] sm:px-4 sm:text-xs">
-                        {activeProject.role}
-                      </span>
-                      <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-gray-500 sm:text-xs">
-                        Mobile Spotlight
-                      </span>
-                    </div>
-
-                    <div className="space-y-3">
-                      <h3 className="text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl">
-                        {activeProject.title}
-                      </h3>
-                      <p className="text-sm leading-relaxed text-gray-400 sm:text-[15px]">
-                        {activeProject.desc}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <a
-                        href={activeProject.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-brand-blue)] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-black transition-transform duration-300 hover:scale-[1.02]"
-                      >
-                        Open Project
-                        <ArrowUpRight className="h-3.5 w-3.5" />
-                      </a>
-                      <div className="text-xs font-bold uppercase tracking-[0.28em] text-gray-500">
-                        Featured Build
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">
-                  Browse Projects
-                </p>
-                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gray-500">
-                  Swipe or tap
-                </p>
-              </div>
-
-              <div
-                ref={mobileProjectRailRef}
-                className="-mx-4 overflow-x-auto px-4 pb-2 overscroll-x-contain sm:-mx-6 sm:px-6"
-              >
-                <div className="flex snap-x snap-mandatory gap-3">
-                {projects.map((proj, idx) => {
-                  const isActive = idx === activeIndex;
-                  const ProjectIcon = proj.icon;
-                  const FolderIcon = isActive ? FolderOpen : Folder;
-
-                  return (
-                    <motion.button
-                      key={`${proj.title}-mobile-card`}
-                      type="button"
-                      ref={(element) => {
-                        mobileProjectButtonRefs.current[idx] = element;
-                      }}
-                      onClick={() => selectProject(idx)}
-                      whileTap={{ scale: 0.98 }}
-                      className={`relative min-h-[164px] w-[220px] shrink-0 snap-center overflow-hidden rounded-[1.4rem] border px-4 pb-4 pt-5 text-left transition-[border-color,background-color,box-shadow] duration-300 sm:w-[250px] ${
-                        isActive
-                          ? "border-[var(--color-brand-blue)] bg-[linear-gradient(180deg,rgba(0,168,255,0.16),rgba(7,23,38,0.92))] shadow-[0_0_24px_rgba(0,168,255,0.12)]"
-                          : "border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(6,14,22,0.92))] hover:border-white/20"
-                      }`}
-                      aria-pressed={isActive}
-                    >
-                      <div
-                        className={`absolute left-4 top-0 h-4 w-20 rounded-b-[0.95rem] border-x border-b ${
-                          isActive
-                            ? "border-[var(--color-brand-blue)]/45 bg-[var(--color-brand-blue)]/14"
-                            : "border-white/10 bg-white/[0.04]"
-                        }`}
-                      />
-                      <div className="mb-3 flex items-start justify-between gap-4">
-                        <div className="flex items-center gap-2">
-                          <FolderIcon className="h-4 w-4 text-[var(--color-brand-blue)]" />
-                          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-gray-500">
-                            Folder
-                          </p>
-                        </div>
-                        <ProjectIcon className="h-5 w-5 text-[var(--color-brand-blue)]" />
-                      </div>
-                      <p className="text-xs font-bold tracking-[0.28em] text-gray-500">
-                        {String(idx + 1).padStart(2, "0")}
-                      </p>
-                      <h3 className="text-base font-semibold leading-snug text-white">
-                        {proj.title}
-                      </h3>
-                      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-gray-400">
-                        {proj.desc}
-                      </p>
-                      <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--color-brand-blue)]">
-                        {proj.role}
-                      </p>
-                    </motion.button>
-                  );
-                })}
-                </div>
-              </div>
-            </div>
-          </div>
+          <MobileWorks
+            projects={projects}
+            activeIndex={activeIndex}
+            onActiveChange={setActiveIndex}
+            resetKey={activeTab}
+          />
         </div>
 
         <div
+          ref={browserRef}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           className="hidden items-stretch gap-6 xl:grid xl:grid-cols-[300px_minmax(0,1fr)]"
