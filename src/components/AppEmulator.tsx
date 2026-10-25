@@ -16,7 +16,7 @@ export function AppEmulator({
   title,
   onEngage,
 }: {
-  // The project's Appetize embed link; sizing options are added here.
+  // The project's Appetize embed link, with scale=auto so the device fits.
   url: string;
   title: string;
   // Fires once the visitor clicks into the emulator, so the carousel can stop
@@ -24,11 +24,6 @@ export function AppEmulator({
   onEngage?: () => void;
 }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
-
-  const src = new URL(url);
-  src.searchParams.set("scale", "auto");
-  src.searchParams.set("centered", "both");
-  src.searchParams.set("deviceColor", "black");
 
   useEffect(() => {
     // Clicks inside a cross-origin frame never reach this page, but focusing
@@ -47,7 +42,7 @@ export function AppEmulator({
     <div className="absolute inset-0 flex justify-center bg-[#05101b] py-4">
       <iframe
         ref={frameRef}
-        src={src.toString()}
+        src={url}
         title={`${title} live demo`}
         loading="lazy"
         allow="clipboard-write"

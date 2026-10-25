@@ -47,7 +47,9 @@ export const allProjects: Project[] = [
     title: "Vertix Save",
     desc: "A mobile budgeting app with spending analytics, forecasts, bills and goals, plus an AI coach that hands out quests.",
     role: "Sole Developer",
-    link: "https://appetize.io/embed/b_xf3en23zsndyqmzm4smkj4qim4?device=pixel7&autoplay=false",
+    // scale=auto and centered=both fit and centre the phone in whatever holds
+    // it: the browser window full screen, or the card when run inline.
+    link: "https://appetize.io/embed/b_xf3en23zsndyqmzm4smkj4qim4?device=pixel7&scale=auto&centered=both&deviceColor=black&autoplay=false",
     icon: PiggyBank,
     emulator: { inline: false },
     demoLogin: { email: "demo@example.com", password: "password123" },
