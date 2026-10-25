@@ -2,6 +2,7 @@
 
 import { Section } from "./Section";
 import { AnimatePresence, motion, useInView } from "framer-motion";
+import { AppEmulator, DemoLogin, EmulatorPoster } from "./AppEmulator";
 import { LivePreview } from "./LivePreview";
 import { MobileWorks } from "./MobileWorks";
 import {
@@ -102,6 +103,9 @@ export function Works() {
   const [railStartIndex, setRailStartIndex] = useState(0);
   const [autoAdvanceCycle, setAutoAdvanceCycle] = useState(0);
   const [hovered, setHovered] = useState(false);
+  // Title of the emulator the visitor clicked into. Advancing past it would
+  // end their session, so the carousel holds while it stays on screen.
+  const [engagedTitle, setEngagedTitle] = useState<string | null>(null);
   const browserRef = useRef<HTMLDivElement>(null);
   const inView = useInView(browserRef, { amount: 0.25 });
 
@@ -109,10 +113,9 @@ export function Works() {
   // that while nobody is looking, or while someone is reading a card. The ref
   // sits on the desktop browser, which is display:none below xl, so phones
   // (where the deck is swiped by hand) never auto-advance.
-  const paused = hovered || !inView;
-
   const projects = activeTab === "featured" ? featuredProjects : allProjects;
   const activeProject = projects[activeIndex];
+  const paused = hovered || !inView || engagedTitle === activeProject.title;
   const ActiveProjectIcon = activeProject.icon;
   const totalProjects = String(projects.length).padStart(2, "0");
   const visibleCount = Math.min(4, projects.length);
@@ -481,15 +484,28 @@ export function Works() {
 
                 <div className="grid xl:grid-cols-[minmax(0,1.5fr)_340px]">
                   <div className="relative h-[320px] overflow-hidden bg-[#05101b] sm:h-[400px] xl:h-[520px]">
-                    <LivePreview
-                      key={activeProject.link}
-                      url={activeProject.previewUrl ?? activeProject.link}
-                      title={activeProject.title}
-                      icon={ActiveProjectIcon}
-                      embedHosts={activeProject.embedHosts}
-                      probe={!activeProject.sameOriginResources}
-                    />
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#06111d] to-transparent" />
+                    {activeProject.emulator?.inline ? (
+                      <AppEmulator
+                        key={activeProject.link}
+                        url={activeProject.link}
+                        title={activeProject.title}
+                        onEngage={() => setEngagedTitle(activeProject.title)}
+                      />
+                    ) : activeProject.emulator ? (
+                      <EmulatorPoster />
+                    ) : (
+                      <>
+                        <LivePreview
+                          key={activeProject.link}
+                          url={activeProject.previewUrl ?? activeProject.link}
+                          title={activeProject.title}
+                          icon={ActiveProjectIcon}
+                          embedHosts={activeProject.embedHosts}
+                          probe={!activeProject.sameOriginResources}
+                        />
+                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#06111d] to-transparent" />
+                      </>
+                    )}
                   </div>
 
                   <div className="flex flex-col justify-between gap-8 border-t border-white/10 p-5 sm:p-6 xl:border-l xl:border-t-0">
@@ -510,6 +526,9 @@ export function Works() {
                         <p className="text-sm leading-relaxed text-gray-400 sm:text-[15px]">
                           {activeProject.desc}
                         </p>
+                        {activeProject.demoLogin ? (
+                          <DemoLogin login={activeProject.demoLogin} />
+                        ) : null}
                       </div>
 
                     </div>

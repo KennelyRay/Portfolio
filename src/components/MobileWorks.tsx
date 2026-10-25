@@ -2,6 +2,7 @@
 
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { DemoLogin, EmulatorPoster } from "./AppEmulator";
 import { LivePreview } from "./LivePreview";
 import { hostOf, type Project } from "@/lib/projects";
 
@@ -10,7 +11,8 @@ import { hostOf, type Project } from "@/lib/projects";
  * scroll-snap deck, swiped like any phone carousel. Only the centred card runs
  * a live preview (rendered at phone width, so the site's own mobile layout
  * shows at a readable size); the rest show a poster, so swiping never stacks
- * up a dozen live sites in memory.
+ * up a dozen live sites in memory. Emulated mobile apps always get a poster,
+ * since a phone inside a phone-sized card is too small to use.
  */
 export function MobileWorks({
   projects,
@@ -110,7 +112,9 @@ export function MobileWorks({
               }`}
             >
               <div className="relative h-[280px] overflow-hidden bg-[#05101b] sm:h-[320px]">
-                {isActive ? (
+                {project.emulator ? (
+                  <EmulatorPoster />
+                ) : isActive ? (
                   <LivePreview
                     key={project.link}
                     url={project.previewUrl ?? project.link}
@@ -141,6 +145,7 @@ export function MobileWorks({
                 <p className="line-clamp-3 text-sm leading-relaxed text-gray-400">
                   {project.desc}
                 </p>
+                {project.demoLogin ? <DemoLogin login={project.demoLogin} /> : null}
 
                 <a
                   href={project.link}

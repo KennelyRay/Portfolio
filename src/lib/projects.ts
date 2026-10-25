@@ -7,6 +7,7 @@ import {
   Library,
   MessageSquareText,
   MonitorSmartphone,
+  PiggyBank,
   Plane,
   ShoppingCart,
   Store,
@@ -31,10 +32,26 @@ export type Project = {
   // browser then blocks the preview's reachability probe even though the site
   // is up (the frame itself is unaffected), so the probe is skipped.
   sameOriginResources?: boolean;
+  // Set for a mobile app whose `link` is an Appetize embed. The card shows a
+  // phone poster that opens the emulator full screen; `inline` runs it inside
+  // the card instead. Appetize only serves framed embeds on paid plans, and
+  // otherwise shows "Embeds are not enabled for this app" in the frame.
+  emulator?: { inline: boolean };
+  // Demo account shown beside the project so visitors can sign in.
+  demoLogin?: { email: string; password: string };
 };
 
 // Newest first: the hero's "latest build" card reads the head of this list.
 export const allProjects: Project[] = [
+  {
+    title: "Vertix Save",
+    desc: "A mobile budgeting app with spending analytics, forecasts, bills and goals, plus an AI coach that hands out quests.",
+    role: "Sole Developer",
+    link: "https://appetize.io/embed/b_xf3en23zsndyqmzm4smkj4qim4?device=pixel7&autoplay=false",
+    icon: PiggyBank,
+    emulator: { inline: false },
+    demoLogin: { email: "demo@example.com", password: "password123" },
+  },
   {
     title: "ValoVertix",
     desc: "A VALORANT companion that shows every skin you own, estimates what the collection cost in VP and pesos, and tracks rank, match stats, the daily store, and the Night Market.",
@@ -143,5 +160,6 @@ export const featuredProjects = featuredTitles.flatMap((title) =>
   allProjects.filter((project) => project.title === title),
 );
 
-export const hostOf = (link: string) =>
-  link.replace(/^https?:\/\//, "").replace(/\/$/, "");
+// Hostname only: some links carry long paths or query strings (an Appetize
+// embed's app key and device options) that would swamp the chrome bar.
+export const hostOf = (link: string) => new URL(link).hostname;
